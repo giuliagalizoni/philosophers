@@ -24,7 +24,7 @@ typedef struct s_philo
 	t_fork	*left_fork;
 	t_fork	*right_fork;
 	pthread_t	thread_id;
-	t_table	table;
+	t_table	*table;
 }	t_philo;
 
 struct s_table

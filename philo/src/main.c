@@ -1,4 +1,4 @@
-#include "includes/philosophers.h"
+#include "../includes/philosophers.h"
 
 #define NUM_PHILO 4
 
@@ -28,7 +28,8 @@ int	main()
 	// init data
 	// start simulation
 
-
+	int num = atoi("asdfhihas120");
+	printf("%d\n", num);
 	while (i < NUM_PHILO)
 	{
 		ids[i] = i + 1;
