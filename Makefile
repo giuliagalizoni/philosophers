@@ -1,2 +1,2 @@
 test:
-	cc -Wall -Wextra -Werror -g philo/main.c -pthread -o philosophers
+	cc -Wall -Wextra -Werror -g philo/src/*.c -pthread -o philosophers
