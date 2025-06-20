@@ -17,9 +17,9 @@ void *routine(void *arg)
 
 int	main()
 {
-	pthread_t philo[NUM_PHILO];
-	int ids[NUM_PHILO];
-	int i = 0;
+	// pthread_t philo[NUM_PHILO];
+	// int ids[NUM_PHILO];
+	// int i = 0;
 
 	// input check
 	// ac must be 5 or 6
@@ -28,29 +28,29 @@ int	main()
 	// init data
 	// start simulation
 
-	int num = atoi("asdfhihas120");
+	int num = atoi("897493487598347598347");
 	printf("%d\n", num);
-	while (i < NUM_PHILO)
-	{
-		ids[i] = i + 1;
-		if (pthread_create(&philo[i],  NULL, routine, &ids[i]))
-		{
-			perror("Failed to create thread");
-			return 1;
-		}
-		i++;
-	}
-	i = 0;
-	while (i < NUM_PHILO)
-	{
-		if (pthread_join(philo[i], NULL))
-		{
-			perror("failed to join thread");
-			return 1;
-		}
-		i++;
-	}
+	// while (i < NUM_PHILO)
+	// {
+	// 	ids[i] = i + 1;
+	// 	if (pthread_create(&philo[i],  NULL, routine, &ids[i]))
+	// 	{
+	// 		perror("Failed to create thread");
+	// 		return 1;
+	// 	}
+	// 	i++;
+	// }
+	// i = 0;
+	// while (i < NUM_PHILO)
+	// {
+	// 	if (pthread_join(philo[i], NULL))
+	// 	{
+	// 		perror("failed to join thread");
+	// 		return 1;
+	// 	}
+	// 	i++;
+	// }
 
-	return 0;
+	// return 0;
 
 }
