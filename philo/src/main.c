@@ -15,7 +15,7 @@ void *routine(void *arg)
 	return NULL;
 }
 
-int	main()
+int	main(int ac, char **av)
 {
 	// pthread_t philo[NUM_PHILO];
 	// int ids[NUM_PHILO];
@@ -28,8 +28,7 @@ int	main()
 	// init data
 	// start simulation
 
-	int num = atoi("897493487598347598347");
-	printf("%d\n", num);
+
 	// while (i < NUM_PHILO)
 	// {
 	// 	ids[i] = i + 1;
@@ -51,6 +50,6 @@ int	main()
 	// 	i++;
 	// }
 
-	// return 0;
+	return 0;
 
 }

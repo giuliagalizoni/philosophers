@@ -4,7 +4,7 @@
 // check for invalid input and throw error
 
 
-int	ft_atoi(const char *str)
+static int	ft_atoi(const char *str)
 {
 	int	i;
 	int	number;
@@ -22,7 +22,11 @@ int	ft_atoi(const char *str)
 		i++;
 	}
 	if (str[i] < '0' || str[i] > '9')
+	{
+		printf("input must contain only digits");
+		// exit the program here?
 		return (0);
+	}
 	while (str[i] >= '0' && str[i] <= '9')
 	{
 		number = number * 10 + (str[i] - '0');
@@ -34,3 +38,39 @@ int	ft_atoi(const char *str)
 // shouldn't be negative
 // shouldn't be 0
 // shouldn't be invalid -- maybe this is the only one that should be thrown inside atoi
+
+static int validate_input(int number)
+{
+	if (number < 0)
+	{
+		printf("number must be positive");
+		return (0);
+	}
+	if (number == 0)
+	{
+		printf("number must be bigger than 0");
+		return (0);
+	}
+	return (1);
+}
+int	parse_input(char *input)
+{
+	int n;
+
+	n = ft_atoi(input);
+	if (!validate_input(n))
+		return (0); // gotta quit the program here somehow?
+		// custum exit function ?
+}
+
+int init_table(int ac, char **av, t_table *table)
+{
+	int n;
+
+	if (ac < 5 || ac > 6) // tlavez isso possa ir pra main
+		return (0);
+	// maybe check first and atoi after?
+	table->philo_number = parse_input(av[1]);
+	table->time_to_die = parse_input(av[2]);
+	return (1);
+}
