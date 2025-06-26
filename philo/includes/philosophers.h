@@ -29,15 +29,17 @@ typedef struct s_philo
 
 struct s_table
 {
-	long	philo_number;
-	long	time_to_die;
-	long	time_to_eat;
-	long	time_to_sleep;
-	long	nbr_limit_meals;
-	long	start_simulation;
+	int	philo_number;
+	int	time_to_die;
+	int	time_to_eat;
+	int	time_to_sleep;
+	int	nbr_limit_meals;
+	int	start_simulation;
 	int		end_simulation;
 	t_fork	*forks;
 	t_philo	*philos;
 };
+
+int init(char **av, t_table *table);
 
 #endif

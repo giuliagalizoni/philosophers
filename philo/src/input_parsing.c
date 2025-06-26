@@ -22,11 +22,7 @@ static int	ft_atoi(const char *str)
 		i++;
 	}
 	if (str[i] < '0' || str[i] > '9')
-	{
-		printf("input must contain only digits");
-		// exit the program here?
 		return (0);
-	}
 	while (str[i] >= '0' && str[i] <= '9')
 	{
 		number = number * 10 + (str[i] - '0');
@@ -39,38 +35,63 @@ static int	ft_atoi(const char *str)
 // shouldn't be 0
 // shouldn't be invalid -- maybe this is the only one that should be thrown inside atoi
 
-static int validate_input(int number)
+int check_input_chars(char *inputs)
 {
-	if (number < 0)
-	{
-		printf("number must be positive");
-		return (0);
+	int i;
+
+	i = 1;
+		while(inputs[i])
+		{
+			if (inputs[i] == 32 || (inputs[i] >=9 && inputs[i] <= 13))
+			{
+				i++;
+				continue;
+			}
+			if (inputs[i] < '0' || inputs[i] > '9') //gotta check if alpha after number is ok
+			{
+				printf("invalid character\n"); // review error printing
+				return (0);
+			}
+		i++;
 	}
-	if (number == 0)
+	return (1);
+}
+
+int valid_input(char *input, char *err)
+{
+	if (input && !check_input_chars(input))
 	{
-		printf("number must be bigger than 0");
+		printf("%s\n", err); // change this after
 		return (0);
 	}
 	return (1);
 }
-int	parse_input(char *input)
+// int	parse_input(char *input)
+// {
+// 	int n;
+
+// 	n = ft_atoi(input);
+// 	if (!validate_input(n))
+// 		return (0); // gotta quit the program here somehow?
+// 		// custum exit function ?
+// }
+
+int init(char **av, t_table *table)
 {
-	int n;
-
-	n = ft_atoi(input);
-	if (!validate_input(n))
-		return (0); // gotta quit the program here somehow?
-		// custum exit function ?
-}
-
-int init_table(int ac, char **av, t_table *table)
-{
-	int n;
-
-	if (ac < 5 || ac > 6) // tlavez isso possa ir pra main
+	if (!valid_input(av[1], "philo number error"))
 		return (0);
-	// maybe check first and atoi after?
-	table->philo_number = parse_input(av[1]);
-	table->time_to_die = parse_input(av[2]);
+	table->philo_number = ft_atoi(av[1]);
+	if (!valid_input(av[2], "time to die error"))
+		return (0);
+	table->time_to_die = ft_atoi(av[2]);
+	if (!valid_input(av[3], "time to eat error"))
+		return (0);
+	table->time_to_eat = ft_atoi(av[3]);
+	if (!valid_input(av[4], "time to sleep error"))
+		return (0);
+	table->time_to_sleep = ft_atoi(av[4]);
+	if (av[5] && !valid_input(av[5], "limit of meals error"))
+		return (0);
+	table->nbr_limit_meals = ft_atoi(av[5]);
 	return (1);
 }
