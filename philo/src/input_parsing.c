@@ -59,39 +59,64 @@ int check_input_chars(char *inputs)
 
 int valid_input(char *input, char *err)
 {
-	if (input && !check_input_chars(input))
+	int n;
+
+	if (!input)
+		return (0);
+	if (!check_input_chars(input))
+	{
+		printf("%s\n", err); // change this after
+		return (0);
+	}
+	n = ft_atoi(input);
+	if (n <= 0)
 	{
 		printf("%s\n", err); // change this after
 		return (0);
 	}
 	return (1);
 }
-// int	parse_input(char *input)
-// {
-// 	int n;
-
-// 	n = ft_atoi(input);
-// 	if (!validate_input(n))
-// 		return (0); // gotta quit the program here somehow?
-// 		// custum exit function ?
-// }
-
-int init(char **av, t_table *table)
+int	check_input(int ac, char **av)
 {
-	if (!valid_input(av[1], "philo number error"))
+	if (ac < 5 || ac > 6)
+	{
+		printf("input needed\n");
 		return (0);
-	table->philo_number = ft_atoi(av[1]);
+	}
+	if (!valid_input(av[1], "philo number error")) // change error messages
+		return (0);
 	if (!valid_input(av[2], "time to die error"))
 		return (0);
-	table->time_to_die = ft_atoi(av[2]);
 	if (!valid_input(av[3], "time to eat error"))
 		return (0);
-	table->time_to_eat = ft_atoi(av[3]);
 	if (!valid_input(av[4], "time to sleep error"))
 		return (0);
-	table->time_to_sleep = ft_atoi(av[4]);
 	if (av[5] && !valid_input(av[5], "limit of meals error"))
 		return (0);
-	table->nbr_limit_meals = ft_atoi(av[5]);
+	return (1);
+}
+
+int data_init(char **av, t_table *table)
+{
+	// if (!valid_input(av[1], "philo number error"))
+	// 	return (0);
+	table->philo_number = ft_atoi(av[1]);
+	// if (!valid_input(av[2], "time to die error"))
+	// 	return (0);
+	table->time_to_die = (long) (ft_atoi(av[2]) * 1000);
+	// if (!valid_input(av[3], "time to eat error"))
+	// 	return (0);
+	table->time_to_eat = (long) (ft_atoi(av[3]) * 1000);
+	// if (!valid_input(av[4], "time to sleep error"))
+	// 	return (0);
+	table->time_to_sleep = (long) (ft_atoi(av[4]) * 1000);
+	if (av[5])
+	{
+		// if (!valid_input(av[5], "limit of meals error"))
+		// 	return (0);
+		table->nbr_limit_meals = ft_atoi(av[5]);
+	}
+	else
+		table->nbr_limit_meals = -1;
 	return (1);
 }

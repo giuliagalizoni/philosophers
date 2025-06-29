@@ -22,23 +22,18 @@ int	main(int ac, char **av)
 {
 	t_table table;
 
-	if (ac < 5 || ac > 6) // tlavez isso possa ir pra main
-	{
-		printf("input needed\n");
-		return (1);
-	}
 	// check invalid input
-	// init data
-		// return 1 in case of error
-	if (!init(av, &table))
+	if (!check_input(ac, av))
 		return (1);
-
+	// init data
+	if (!data_init(av, &table))
+		return (1);
 	printf("number of philos: %d\n", table.philo_number);
-	printf("number of philos: %d\n", table.time_to_die);
-	printf("number of philos: %d\n", table.time_to_eat);
-	printf("number of philos: %d\n", table.time_to_sleep);
+	printf("time to die: %ld\n", table.time_to_die);
+	printf("time to eat: %ld\n", table.time_to_eat);
+	printf("time to sleep: %ld\n", table.time_to_sleep);
 	if (table.nbr_limit_meals)
-		printf("number of philos: %d\n", table.nbr_limit_meals);
+		printf("limit of meals: %d\n", table.nbr_limit_meals);
 	// special case for 1 philo
 	// initiate therad
 	// cleanup
