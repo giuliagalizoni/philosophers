@@ -30,9 +30,9 @@ typedef struct s_philo
 struct s_table
 {
 	int	philo_number;
-	int	time_to_die;
-	int	time_to_eat;
-	int	time_to_sleep;
+	long	time_to_die;
+	long	time_to_eat;
+	long	time_to_sleep;
 	int	nbr_limit_meals;
 	int	start_simulation;
 	int		end_simulation;
@@ -40,6 +40,9 @@ struct s_table
 	t_philo	*philos;
 };
 
-int init(char **av, t_table *table);
+int data_init(char **av, t_table *table);
+int	check_input(int ac, char **av);
+void	*safe_malloc(size_t size);
+
 
 #endif
