@@ -96,27 +96,4 @@ int	check_input(int ac, char **av)
 	return (1);
 }
 
-int data_init(char **av, t_table *table)
-{
-	// if (!valid_input(av[1], "philo number error"))
-	// 	return (0);
-	table->philo_number = ft_atoi(av[1]);
-	// if (!valid_input(av[2], "time to die error"))
-	// 	return (0);
-	table->time_to_die = (long) (ft_atoi(av[2]) * 1000);
-	// if (!valid_input(av[3], "time to eat error"))
-	// 	return (0);
-	table->time_to_eat = (long) (ft_atoi(av[3]) * 1000);
-	// if (!valid_input(av[4], "time to sleep error"))
-	// 	return (0);
-	table->time_to_sleep = (long) (ft_atoi(av[4]) * 1000);
-	if (av[5])
-	{
-		// if (!valid_input(av[5], "limit of meals error"))
-		// 	return (0);
-		table->nbr_limit_meals = ft_atoi(av[5]);
-	}
-	else
-		table->nbr_limit_meals = -1;
-	return (1);
-}
+

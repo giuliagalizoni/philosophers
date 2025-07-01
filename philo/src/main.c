@@ -18,6 +18,23 @@
 // - custom perror
 // - cleanup function
 
+int data_init(char **av, t_table *table)
+{
+
+	table->philo_number = ft_atoi(av[1]);
+	table->time_to_die = (long) (ft_atoi(av[2]) * 1000);
+	table->time_to_eat = (long) (ft_atoi(av[3]) * 1000);
+	table->time_to_sleep = (long) (ft_atoi(av[4]) * 1000);
+	if (av[5])
+		table->nbr_limit_meals = ft_atoi(av[5]);
+	else
+		table->nbr_limit_meals = -1;
+	return (1);
+	table->end_simulation = 0;
+	table->philos = safe_malloc(sizeof(t_philo) * table->philo_number);
+	table->forks = safe_malloc(sizeof(t_fork) * table->philo_number);
+}
+
 int	main(int ac, char **av)
 {
 	t_table table;
