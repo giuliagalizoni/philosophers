@@ -4,7 +4,7 @@
 // check for invalid input and throw error
 
 
-static int	ft_atoi(const char *str)
+int	ft_atoi(const char *str)
 {
 	int	i;
 	int	number;

@@ -12,3 +12,83 @@ void	*safe_malloc(size_t size)
 	}
 	return memory;
 }
+
+
+// * opcode for mutex and thread functions
+// enum e_opcode
+// {
+// 	LOCK,
+// 	UNLOCK,
+// 	INIT,
+// 	DESTROY,
+// 	CREATE,
+// 	JOIN,
+// 	DETACH
+// }	t_opcode;
+
+// Embed controls on return status
+
+static int	handle_mutex_error(int status, t_opcode opcode)
+{
+	if (0 == status)
+		return 1;
+	if (EINVAL == status && (LOCK == opcode || UNLOCK == opcode))
+	{
+		// print error "The value specified by mutex is invalid."
+		return 0;
+	}
+	else if (EINVAL == status && INIT == opcode)
+	{
+		// print error "The value specified by attr is invalid."
+		return 0;
+	}
+	else if (EDEADLK == status)
+	{
+		// print error "A deadlock would occur if the thread blocked waiting for mutex."
+		return 0;
+	}
+	else if (EPERM == status)
+	{
+		// print error "The current thread does not hold a lock on mutex."
+		return 0;
+	}
+	else if (ENOMEM == status)
+	{
+		// print error "The process cannot allocate enough memory to create another mutex."
+		return 0;
+	}
+	else if (EBUSY == status)
+	{
+		// print error "Mutex is locked."
+		return 0;
+	}
+	return (1);
+}
+
+// MUTEX SAFE
+// init
+// destroy
+// lock
+// unlock
+
+int	safe_mutex_handle(pthread_mutex_t *mutex, t_opcode opcode)
+{
+	if (LOCK == opcode)
+		return handle_mutex_error(pthread_mutex_lock(mutex), opcode);
+	else if (UNLOCK == opcode)
+		return handle_mutex_error(pthread_mutex_unlock(mutex), opcode);
+	else if (INIT == opcode)
+		return handle_mutex_error(pthread_mutex_init(mutex, NULL), opcode);
+	else if (DESTROY == opcode)
+		return handle_mutex_error(pthread_mutex_destroy(mutex), opcode);
+	else
+	{
+		printf("wrong opcode");
+		return (0);
+	}
+	return (1);
+}
+
+
+// Safe thread handle
+
