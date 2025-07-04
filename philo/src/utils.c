@@ -13,6 +13,11 @@ void	*safe_malloc(size_t size)
 	return memory;
 }
 
+void	ft_usleep()
+{
+
+}
+
 
 // * opcode for mutex and thread functions
 // enum e_opcode

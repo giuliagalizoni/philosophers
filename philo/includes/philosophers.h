@@ -18,6 +18,13 @@ typedef enum e_opcode
 	DETACH
 }	t_opcode;
 
+typedef enum e_time_code
+{
+	SECOND,
+	MILISECOND,
+	MICROSECOND,
+}	t_time_code;
+
 typedef struct s_table	t_table;
 //Fork
 typedef struct s_fork
@@ -37,6 +44,7 @@ typedef struct s_philo
 	t_fork	*second_fork;
 	pthread_t	thread_id;
 	t_table	*table;
+
 }	t_philo;
 
 struct s_table
@@ -48,6 +56,8 @@ struct s_table
 	int	nbr_limit_meals;
 	int	start_simulation;
 	int		end_simulation;
+	int		all_ready;
+	pthread_mutex_t	*mutex;
 	t_fork	*forks;
 	t_philo	*philos;
 };
@@ -57,6 +67,11 @@ int data_init(char **av, t_table *table);
 int	check_input(int ac, char **av);
 void	*safe_malloc(size_t size);
 int	safe_mutex_handle(pthread_mutex_t *mutex, t_opcode opcode);
+
+void	set_int(pthread_mutex_t *mutex, int *dest, int value);
+int	get_int(pthread_mutex_t *mutex, int *value);
+void	set_long(pthread_mutex_t *mutex, long *dest, long value);
+long	get_long(pthread_mutex_t *mutex, long *value);
 
 
 #endif
