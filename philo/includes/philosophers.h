@@ -7,6 +7,15 @@
 # include <sys/time.h>
 # include <errno.h>
 
+typedef enum e_action
+{
+	EATING,
+	SLEEPING,
+	THINKING,
+	TAKE_FIRST_FORK,
+	TAKE_SECOND_FORK,
+	DIED,
+}	t_philo_action;
 typedef enum e_opcode
 {
 	LOCK,
@@ -57,7 +66,8 @@ struct s_table
 	int	start_simulation;
 	int		end_simulation;
 	int		all_ready;
-	pthread_mutex_t	*mutex;
+	pthread_mutex_t	mutex;
+	pthread_mutex_t write_lock;
 	t_fork	*forks;
 	t_philo	*philos;
 };
@@ -67,11 +77,17 @@ int data_init(char **av, t_table *table);
 int	check_input(int ac, char **av);
 void	*safe_malloc(size_t size);
 int	safe_mutex_handle(pthread_mutex_t *mutex, t_opcode opcode);
+int	safe_thread_handle(pthread_t *thread, void *(*function)(void *), void *data, t_opcode opcode);
+
+void	write_action(t_philo_action action, t_philo *philo);
 
 void	set_int(pthread_mutex_t *mutex, int *dest, int value);
 int	get_int(pthread_mutex_t *mutex, int *value);
 void	set_long(pthread_mutex_t *mutex, long *dest, long value);
 long	get_long(pthread_mutex_t *mutex, long *value);
+int	finish_simulation(t_table *table);
+long	get_time(t_time_code timecode);
+void	ft_usleep(long usec, t_table *table);
 
 
 #endif
