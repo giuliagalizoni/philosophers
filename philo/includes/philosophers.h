@@ -52,8 +52,8 @@ typedef struct s_philo
 	t_fork	*first_fork;
 	t_fork	*second_fork;
 	pthread_t	thread_id;
+	pthread_mutex_t lock;
 	t_table	*table;
-
 }	t_philo;
 
 struct s_table
@@ -66,7 +66,7 @@ struct s_table
 	int	start_simulation;
 	int		end_simulation;
 	int		all_ready;
-	pthread_mutex_t	mutex;
+	pthread_mutex_t	lock;
 	pthread_mutex_t write_lock;
 	t_fork	*forks;
 	t_philo	*philos;
