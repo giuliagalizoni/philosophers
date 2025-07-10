@@ -13,10 +13,10 @@ void	*safe_malloc(size_t size)
 	return memory;
 }
 
-void	ft_usleep()
-{
+// void	ft_usleep()
+// {
 
-}
+// }
 
 
 // * opcode for mutex and thread functions
@@ -35,6 +35,7 @@ void	ft_usleep()
 
 static int	handle_mutex_error(int status, t_opcode opcode)
 {
+	(void)opcode; // check later
 	if (0 == status)
 		return 1;
 	if (EINVAL == status && (LOCK == opcode || UNLOCK == opcode))
@@ -70,6 +71,39 @@ static int	handle_mutex_error(int status, t_opcode opcode)
 	return (1);
 }
 
+static int	handle_thread_error(int status, t_opcode opcode)
+{
+	(void)opcode; // check this later
+	if (0 == status)
+		return 1;
+	if (EAGAIN == status)
+	{
+		// "No resources to create another thread."
+		return (0);
+	}
+	else if (EPERM == status)
+	{
+		// "The caller does not have appropriate permission."
+		return (0);
+	}
+	else if (EINVAL == status)
+	{
+		// "The value specified by attr is invalid."
+		return (0);
+	}
+	else if (ESRCH == status)
+	{
+		// "No thread could be found corresponding to that specified by the given thread ID, thread."
+		return (0);
+	}
+	else if (EDEADLK == status)
+	{
+		// "A deadlock was detected or the value of thread specifies the calling thread."
+		return (0);
+	}
+	return (1);
+}
+
 // MUTEX SAFE
 // init
 // destroy
@@ -88,12 +122,48 @@ int	safe_mutex_handle(pthread_mutex_t *mutex, t_opcode opcode)
 		return handle_mutex_error(pthread_mutex_destroy(mutex), opcode);
 	else
 	{
-		printf("wrong opcode");
+		printf("wrong opcode"); // perror f
 		return (0);
 	}
 	return (1);
 }
 
+int	safe_thread_handle(pthread_t *thread, void *(*function)(void *), void *data, t_opcode opcode)
+{
+	if (CREATE == opcode)
+		return (handle_thread_error(pthread_create(thread, NULL, function, data), opcode));
+	else if (JOIN == opcode)
+		return (handle_thread_error(pthread_join(*thread, NULL), opcode));
+	else if (DETACH == opcode)
+		return (handle_thread_error(pthread_detach(*thread), opcode));
+	else
+	{
+		// "Wrong opcode -- show options"
+		return 0;
+	}
+}
 
-// Safe thread handle
+void	ft_usleep(long usec, t_table *table)
+{
+	long	start;
+	long	elapsed;
+	long	remaining;
 
+	start = get_time(MICROSECOND);
+	while ((get_time(MICROSECOND) - start) < usec)
+	{
+		if (finish_simulation(table))
+			break;
+		elapsed = get_time(MICROSECOND) - start;
+		remaining = usec - elapsed;
+		// to get a spinlock threshold
+		if (remaining > 1000)
+			usleep(remaining / 2);
+		else
+		{
+			// spinklock
+			while(get_time(MICROSECOND) - start < usec)
+				;
+		}
+	}
+}
