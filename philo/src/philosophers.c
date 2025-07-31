@@ -142,7 +142,7 @@ int	start(t_table *table)
 		i++;
 	}
 	// monitor
-	safe_thread_handle(table->monitor, monitor, table, CREATE);
+	safe_thread_handle(&table->monitor, monitor, table, CREATE);
 	// start of simulation
 	table->start_simulation = get_time(MILISECOND);
 	if (!table->start_simulation)
