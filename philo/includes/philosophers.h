@@ -63,9 +63,11 @@ struct s_table
 	long	time_to_eat;
 	long	time_to_sleep;
 	int	nbr_limit_meals;
-	int	start_simulation;
+	long	start_simulation;
 	int		end_simulation;
 	int		all_ready;
+	int	running_threads;
+	pthread_t	monitor;
 	pthread_mutex_t	lock;
 	pthread_mutex_t write_lock;
 	t_fork	*forks;
@@ -75,6 +77,7 @@ struct s_table
 int	ft_atoi(const char *str);
 int data_init(char **av, t_table *table);
 int	check_input(int ac, char **av);
+int	start(t_table *table);
 void	*safe_malloc(size_t size);
 int	safe_mutex_handle(pthread_mutex_t *mutex, t_opcode opcode);
 int	safe_thread_handle(pthread_t *thread, void *(*function)(void *), void *data, t_opcode opcode);
@@ -88,6 +91,8 @@ long	get_long(pthread_mutex_t *mutex, long *value);
 int	finish_simulation(t_table *table);
 long	get_time(t_time_code timecode);
 void	ft_usleep(long usec, t_table *table);
+
+void	*monitor(void *data);
 
 
 #endif

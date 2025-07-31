@@ -1,4 +1,4 @@
-#include "philosophers.h"
+#include "../includes/philosophers.h"
 
 
 void	write_action(t_philo_action action, t_philo *philo)

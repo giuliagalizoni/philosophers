@@ -61,6 +61,8 @@ int data_init(char **av, t_table *table)
 	else
 		table->nbr_limit_meals = -1;
 	table->end_simulation = 0;
+	table->all_ready = 0;
+	table->running_threads = 0;
 	table->philos = safe_malloc(sizeof(t_philo) * table->philo_number);
 	safe_mutex_handle(&table->lock, INIT);
 	table->forks = safe_malloc(sizeof(t_fork) * table->philo_number);
@@ -86,12 +88,14 @@ int	main(int ac, char **av)
 	// init data
 	if (!data_init(av, &table))
 		return (1);
-	printf("number of philos: %d\n", table.philo_number);
-	printf("time to die: %ld\n", table.time_to_die);
-	printf("time to eat: %ld\n", table.time_to_eat);
-	printf("time to sleep: %ld\n", table.time_to_sleep);
-	if (table.nbr_limit_meals)
-		printf("limit of meals: %d\n", table.nbr_limit_meals);
+	// printf("number of philos: %d\n", table.philo_number);
+	// printf("time to die: %ld\n", table.time_to_die);
+	// printf("time to eat: %ld\n", table.time_to_eat);
+	// printf("time to sleep: %ld\n", table.time_to_sleep);
+	// if (table.nbr_limit_meals)
+	// 	printf("limit of meals: %d\n", table.nbr_limit_meals);
+
+	start(&table);
 	// special case for 1 philo
 	// initiate therad
 	// cleanup
