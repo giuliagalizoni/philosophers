@@ -21,11 +21,11 @@
 static void assign_forks(t_philo *philo, t_fork *forks, int pos)
 {
 	philo->second_fork = &forks[pos];
-	philo->first_fork = &forks[(pos + 1 % philo->table->philo_number)];
+	philo->first_fork = &forks[((pos + 1) % philo->table->philo_number)];
 	if (philo->id % 2 == 0)
 	{
 		philo->first_fork = &forks[pos];
-		philo->second_fork = &forks[(pos + 1 % philo->table->philo_number)];
+		philo->second_fork = &forks[(pos + 1) % philo->table->philo_number];
 	}
 }
 
