@@ -98,5 +98,7 @@ void	ft_usleep(long usec, t_table *table);
 
 void	*monitor(void *data);
 
+void	cleanup(t_table *table);
+
 
 #endif

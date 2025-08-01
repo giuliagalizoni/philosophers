@@ -56,11 +56,13 @@ void	*routine(void *data)
 	//set last meal time
 	set_long(&philo->lock, &philo->last_meal_time, get_time(MILISECOND));
 
+	// to make the game fair
+
 	while(!finish_simulation(philo->table))
 	{
 		// 1 philo is full?
-		if (philo->is_full) //todo thread safe
-			break ;
+		if (get_int(&philo->lock, &philo->is_full))
+    		break;
 		// 2 eat
 		eat(philo);
 		// 3 sleep -> write status & ft_usleep
@@ -105,7 +107,7 @@ void	set_long(pthread_mutex_t *mutex, long *dest, long value)
 
 long	get_long(pthread_mutex_t *mutex, long *value)
 {
-	int result;
+	long result;
 	safe_mutex_handle(mutex, LOCK);
 	result = *value;
 	safe_mutex_handle(mutex, UNLOCK);
@@ -183,7 +185,9 @@ int	start(t_table *table)
 		safe_thread_handle(&table->philos[i].thread_id, NULL, NULL, JOIN);
 		i++;
 	}
-	safe_thread_handle(&table->monitor, NULL, NULL, JOIN);
 	// if we manage to reach this line, all philos are full
+	set_int(&table->lock, &table->end_simulation, 1);
+	safe_thread_handle(&table->monitor, NULL, NULL, JOIN);
+
 	return 1;
 }

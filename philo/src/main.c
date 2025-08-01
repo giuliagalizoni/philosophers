@@ -79,27 +79,35 @@ int data_init(char **av, t_table *table)
 	return (1);
 }
 
+void	cleanup(t_table *table)
+{
+	t_philo *philo;
+	int	i;
+
+	i = 0;
+	while (i < table->philo_number)
+	{
+		philo = table->philos + i;
+		safe_mutex_handle(&philo->lock, DESTROY); // deal with return value
+		i++;
+	}
+	safe_mutex_handle(&table->write_lock, DESTROY); // deal with return value
+	safe_mutex_handle(&table->lock, DESTROY); // deal with return value
+	free(table->forks);
+	free(table->philos);
+}
+
 int	main(int ac, char **av)
 {
 	t_table table;
 
-	// check invalid input
 	if (!check_input(ac, av))
 		return (1);
-	// init data
 	if (!data_init(av, &table))
 		return (1);
-	// printf("number of philos: %d\n", table.philo_number);
-	// printf("time to die: %ld\n", table.time_to_die);
-	// printf("time to eat: %ld\n", table.time_to_eat);
-	// printf("time to sleep: %ld\n", table.time_to_sleep);
-	// if (table.nbr_limit_meals)
-	// 	printf("limit of meals: %d\n", table.nbr_limit_meals);
-
-	start(&table);
-	// special case for 1 philo
-	// initiate therad
-	// cleanup
+	if (!start(&table))
+		return (1);
+	cleanup(&table);
 	return 0;
 
 }

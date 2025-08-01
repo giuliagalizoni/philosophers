@@ -80,7 +80,7 @@ int	check_input(int ac, char **av)
 {
 	if (ac < 5 || ac > 6)
 	{
-		printf("input needed\n");
+		printf("input needed\n"); // usage message
 		return (0);
 	}
 	if (!valid_input(av[1], "philo number error")) // change error messages
