@@ -48,8 +48,8 @@ void	*monitor(void *data)
 		{
 			if (dead_philo(table->philos + i))
 			{
-				set_int(&table->lock, &table->end_simulation, 1);
 				write_action(DIED, table->philos + i);
+				set_int(&table->lock, &table->end_simulation, 1);
 			}
 			i++;
 		}

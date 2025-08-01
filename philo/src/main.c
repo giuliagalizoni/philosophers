@@ -65,6 +65,7 @@ int data_init(char **av, t_table *table)
 	table->running_threads = 0;
 	table->philos = safe_malloc(sizeof(t_philo) * table->philo_number);
 	safe_mutex_handle(&table->lock, INIT);
+	safe_mutex_handle(&table->write_lock, INIT); // is this right?
 	table->forks = safe_malloc(sizeof(t_fork) * table->philo_number);
 	i = 0;
 	while(i < table->philo_number)
