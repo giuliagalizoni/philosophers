@@ -16,6 +16,7 @@ typedef enum e_action
 	TAKE_SECOND_FORK,
 	DIED,
 }	t_philo_action;
+
 typedef enum e_opcode
 {
 	LOCK,
@@ -86,8 +87,11 @@ void	write_action(t_philo_action action, t_philo *philo);
 
 void	set_int(pthread_mutex_t *mutex, int *dest, int value);
 int	get_int(pthread_mutex_t *mutex, int *value);
+void	increase_int(pthread_mutex_t *mutex, int *value);
 void	set_long(pthread_mutex_t *mutex, long *dest, long value);
 long	get_long(pthread_mutex_t *mutex, long *value);
+
+
 int	finish_simulation(t_table *table);
 long	get_time(t_time_code timecode);
 void	ft_usleep(long usec, t_table *table);

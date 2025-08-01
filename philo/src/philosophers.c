@@ -89,6 +89,13 @@ int	get_int(pthread_mutex_t *mutex, int *value)
 	return (result);
 }
 
+void	increase_int(pthread_mutex_t *lock, int *value)
+{
+	safe_mutex_handle(lock, LOCK);
+	(*value)++;
+	safe_mutex_handle(lock, UNLOCK);
+}
+
 void	set_long(pthread_mutex_t *mutex, long *dest, long value)
 {
 	safe_mutex_handle(mutex, LOCK);
@@ -104,6 +111,8 @@ long	get_long(pthread_mutex_t *mutex, long *value)
 	safe_mutex_handle(mutex, UNLOCK);
 	return (result);
 }
+
+
 
 //choronometer
 // * time code: seconds miliseconds microsecond
@@ -123,23 +132,41 @@ long	get_time(t_time_code timecode)
 		return (0); //keep track of the error
 }
 
+void	*single_philo_routine(void *arg)
+{
+	t_philo *philo;
+
+	philo = (t_philo *)arg;
+	wait_all_threads(philo->table);
+	set_long(&philo->lock, &philo->last_meal_time, get_time(MILISECOND));
+	increase_int(&philo->table->lock, &philo->table->running_threads);
+	write_action(TAKE_FIRST_FORK, philo);
+	while(!finish_simulation(philo->table))
+		usleep(200);
+	return (NULL);
+}
+
 int	start(t_table *table)
 {
 	int i;
 
+	i = 0;
 	if (!table->nbr_limit_meals)
 		return 0; //maybe turn into int function
 	if (table->philo_number == 1)
 	{
-		; // special case
+		// deal with return value
+		safe_thread_handle(&table->philos[0].thread_id, single_philo_routine, &table->philos[0], CREATE);
 	}
-	i = 0;
-	while (i < table->philo_number)
+	else
 	{
-		// still have to code this function
-		safe_thread_handle(&table->philos[i].thread_id, routine,
-			&table->philos[i], CREATE);
-		i++;
+		while (i < table->philo_number)
+		{
+			// deal with return value of safe thread
+			safe_thread_handle(&table->philos[i].thread_id, routine,
+				&table->philos[i], CREATE);
+			i++;
+		}
 	}
 	// monitor
 	safe_thread_handle(&table->monitor, monitor, table, CREATE);
@@ -156,6 +183,7 @@ int	start(t_table *table)
 		safe_thread_handle(&table->philos[i].thread_id, NULL, NULL, JOIN);
 		i++;
 	}
+	safe_thread_handle(&table->monitor, NULL, NULL, JOIN);
 	// if we manage to reach this line, all philos are full
 	return 1;
 }
