@@ -100,5 +100,7 @@ void	*monitor(void *data);
 
 void	cleanup(t_table *table);
 
+void	think(t_philo *philo);
+
 
 #endif

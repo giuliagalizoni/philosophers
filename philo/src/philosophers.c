@@ -21,9 +21,17 @@ int	finish_simulation(t_table *table)
 	return (get_int(&table->lock, &table->end_simulation));
 }
 
-static void	think(t_philo *philo)
+void	think(t_philo *philo)
 {
+	long	time_to_think;
+
 	write_action(THINKING, philo);
+	if (philo->table->philo_number % 2 == 0)
+		return ;
+	time_to_think = philo->table->time_to_eat * 2 - philo->table->time_to_sleep;
+	if (time_to_think < 0)
+		time_to_think = 0;
+	ft_usleep(time_to_think * 0.5, philo->table);
 }
 
 static void eat(t_philo *philo)
@@ -34,13 +42,27 @@ static void eat(t_philo *philo)
 	write_action(TAKE_SECOND_FORK, philo);
 
 	set_long(&philo->lock, &philo->last_meal_time, get_time(MILISECOND));
-	philo->meals_counter++;
+	philo->meals_counter++; // maybe thread safe?
 	write_action(EATING, philo);
 	ft_usleep(philo->table->time_to_eat, philo->table);
 	if (philo->table->nbr_limit_meals > 0 && philo->meals_counter == philo->table->nbr_limit_meals)
 		set_int(&philo->lock, &philo->is_full, 1);
 	safe_mutex_handle(&philo->first_fork->lock, UNLOCK);
 	safe_mutex_handle(&philo->second_fork->lock, UNLOCK);
+}
+
+void	force_think(t_philo *philo)
+{
+	if (philo->table->philo_number % 2 == 0)
+	{
+		if (philo->id % 2 == 0)
+			ft_usleep(30000, philo->table);
+	}
+	else
+	{
+		if (philo->id % 2 )
+			think(philo);
+	}
 }
 
 void	*routine(void *data)
