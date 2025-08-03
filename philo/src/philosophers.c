@@ -97,46 +97,60 @@ void	*routine(void *data)
 	return (NULL);
 }
 
-void	set_int(pthread_mutex_t *mutex, int *dest, int value)
+int	set_int(pthread_mutex_t *mutex, int *dest, int value)
 {
-	safe_mutex_handle(mutex, LOCK);
+	if (!safe_mutex_handle(mutex, LOCK))
+		return (0);
 	*dest = value;
-	safe_mutex_handle(mutex, UNLOCK);
+	if (!safe_mutex_handle(mutex, UNLOCK))
+		return (0);
+	return (1);
 }
 
-int	get_int(pthread_mutex_t *mutex, int *value)
+int	get_int(pthread_mutex_t *mutex, int *value) // change to receive the value by pointer
 {
-	int result;
-	safe_mutex_handle(mutex, LOCK);
+	int	result;
+	int	status;
+
+	if (!safe_mutex_handle(mutex, LOCK))
+		return (0);
 	result = *value;
-	safe_mutex_handle(mutex, UNLOCK);
-	return (result);
+	if (!safe_mutex_handle(mutex, UNLOCK))
+		return (0);
+	return (result); //problem
 }
 
-void	increase_int(pthread_mutex_t *lock, int *value)
+int	increase_int(pthread_mutex_t *lock, int *value)
 {
-	safe_mutex_handle(lock, LOCK);
+	if (!safe_mutex_handle(lock, LOCK))
+		return (0);
 	(*value)++;
-	safe_mutex_handle(lock, UNLOCK);
+	if (!safe_mutex_handle(lock, UNLOCK))
+		return (0);
+	return (1);
 }
 
-void	set_long(pthread_mutex_t *mutex, long *dest, long value)
+int	set_long(pthread_mutex_t *mutex, long *dest, long value)
 {
-	safe_mutex_handle(mutex, LOCK);
+	if (!safe_mutex_handle(mutex, LOCK))
+		return (0);
 	*dest = value;
-	safe_mutex_handle(mutex, UNLOCK);
+	if (!safe_mutex_handle(mutex, UNLOCK))
+		return (0);
+	return (1);
 }
 
-long	get_long(pthread_mutex_t *mutex, long *value)
+long	get_long(pthread_mutex_t *mutex, long *value) // change to receive the value by pointer
 {
-	long result;
-	safe_mutex_handle(mutex, LOCK);
+	long	result;
+
+	if (!safe_mutex_handle(mutex, LOCK))
+		return (0);
 	result = *value;
-	safe_mutex_handle(mutex, UNLOCK);
-	return (result);
+	if (!safe_mutex_handle(mutex, UNLOCK))
+		return (0);
+	return (result); //problem
 }
-
-
 
 //choronometer
 // * time code: seconds miliseconds microsecond
@@ -145,7 +159,7 @@ long	get_time(t_time_code timecode)
 	struct timeval tv;
 
 	if (gettimeofday(&tv, NULL))
-		return (0); // keep the track of the error
+		return (0); // keep the track of the error // will this work?
 	if (SECOND == timecode)
 		return (tv.tv_sec + (tv.tv_usec / 1000000));
 	else if (MILISECOND == timecode)
@@ -156,14 +170,15 @@ long	get_time(t_time_code timecode)
 		return (0); //keep track of the error
 }
 
-void	*single_philo_routine(void *arg)
+void	*single_philo_routine(void *arg) // how can I track the errors in thouse functions
 {
 	t_philo *philo;
 
 	philo = (t_philo *)arg;
-	wait_all_threads(philo->table);
+	wait_all_threads(philo->table); // return value??
 	set_long(&philo->lock, &philo->last_meal_time, get_time(MILISECOND));
-	increase_int(&philo->table->lock, &philo->table->running_threads);
+	if (!increase_int(&philo->table->lock, &philo->table->running_threads))
+		return ((void *)1); // can I do this?
 	write_action(TAKE_FIRST_FORK, philo);
 	while(!finish_simulation(philo->table))
 		usleep(200);
@@ -172,44 +187,48 @@ void	*single_philo_routine(void *arg)
 
 int	start(t_table *table)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	if (!table->nbr_limit_meals)
-		return 0; //maybe turn into int function
+		return (1); //maybe turn into int function -- idk what I meant here
 	if (table->philo_number == 1)
 	{
-		// deal with return value
-		safe_thread_handle(&table->philos[0].thread_id, single_philo_routine, &table->philos[0], CREATE);
+		if (!safe_thread_handle(&table->philos[0].thread_id, single_philo_routine, &table->philos[0], CREATE))
+			return (0);
 	}
 	else
 	{
 		while (i < table->philo_number)
 		{
-			// deal with return value of safe thread
-			safe_thread_handle(&table->philos[i].thread_id, routine,
-				&table->philos[i], CREATE);
+			if (!safe_thread_handle(&table->philos[i].thread_id, routine,
+				&table->philos[i], CREATE))
+				return (0);
 			i++;
 		}
 	}
 	// monitor
-	safe_thread_handle(&table->monitor, monitor, table, CREATE);
+	if (!safe_thread_handle(&table->monitor, monitor, table, CREATE))
+		return (0);
 	// start of simulation
 	table->start_simulation = get_time(MILISECOND);
 	if (!table->start_simulation)
 		return (0); // keep track of error
 	// now all threads are ready
-	set_int(&table->lock, &table->all_ready, 1);
+	if (!set_int(&table->lock, &table->all_ready, 1))
+		return (0);
 	// wait for everyone
 	i = 0;
 	while(i < table->philo_number)
 	{
-		safe_thread_handle(&table->philos[i].thread_id, NULL, NULL, JOIN);
+		if (!safe_thread_handle(&table->philos[i].thread_id, NULL, NULL, JOIN))
+			return (0);
 		i++;
 	}
 	// if we manage to reach this line, all philos are full
-	set_int(&table->lock, &table->end_simulation, 1);
-	safe_thread_handle(&table->monitor, NULL, NULL, JOIN);
-
+	if (!set_int(&table->lock, &table->end_simulation, 1))
+		return (0);
+	if (!safe_thread_handle(&table->monitor, NULL, NULL, JOIN))
+		return (0);
 	return 1;
 }
