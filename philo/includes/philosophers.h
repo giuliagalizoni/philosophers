@@ -83,7 +83,7 @@ void	*safe_malloc(size_t size);
 int	safe_mutex_handle(pthread_mutex_t *mutex, t_opcode opcode);
 int	safe_thread_handle(pthread_t *thread, void *(*function)(void *), void *data, t_opcode opcode);
 
-void	write_action(t_philo_action action, t_philo *philo);
+int	write_action(t_philo_action action, t_philo *philo);
 
 // safety helpers
 int	set_int(pthread_mutex_t *mutex, int *dest, int value);
@@ -101,7 +101,7 @@ void	*monitor(void *data);
 
 void	cleanup(t_table *table);
 
-void	think(t_philo *philo);
+int	think(t_philo *philo);
 
 
 #endif

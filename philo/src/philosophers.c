@@ -31,17 +31,19 @@ int	finish_simulation(t_table *table, int *is_finished)
 	return (1);
 }
 
-void	think(t_philo *philo)
+int	think(t_philo *philo)
 {
 	long	time_to_think;
 
-	write_action(THINKING, philo);
+	if (!write_action(THINKING, philo))
+		return (0);
 	if (philo->table->philo_number % 2 == 0)
 		return ;
 	time_to_think = philo->table->time_to_eat * 2 - philo->table->time_to_sleep;
 	if (time_to_think < 0)
 		time_to_think = 0;
 	ft_usleep(time_to_think * 0.5, philo->table);
+	return (1);
 }
 
 static int eat(t_philo *philo)
@@ -55,7 +57,8 @@ static int eat(t_philo *philo)
 	if (!set_long(&philo->lock, &philo->last_meal_time, get_time(MILISECOND)))
 		return (0);
 	philo->meals_counter++; // maybe thread safe?
-	write_action(EATING, philo);
+	if (!write_action(EATING, philo))
+		return (0);
 	ft_usleep(philo->table->time_to_eat, philo->table);
 	if (philo->table->nbr_limit_meals > 0 && philo->meals_counter == philo->table->nbr_limit_meals)
 	{
@@ -69,7 +72,7 @@ static int eat(t_philo *philo)
 	return (1);
 }
 
-void	force_think(t_philo *philo)
+int	force_think(t_philo *philo)
 {
 	if (philo->table->philo_number % 2 == 0)
 	{
@@ -79,8 +82,12 @@ void	force_think(t_philo *philo)
 	else
 	{
 		if (philo->id % 2 )
-			think(philo);
+		{
+			if (!think(philo))
+				return (0);
+		}
 	}
+	return (1);
 }
 
 void	*routine(void *data)
@@ -115,9 +122,11 @@ void	*routine(void *data)
 		if (is_full)
 			break;
 		// 2 eat
-		eat(philo);
+		if (!eat(philo))
+			return (NULL);
 		// 3 sleep -> write status & ft_usleep
-		write_action(SLEEPING, philo);
+		if(!write_action(SLEEPING, philo))
+			return (NULL);
 		ft_usleep(philo->table->time_to_sleep, philo->table);
 
 		// 4 think
@@ -205,7 +214,8 @@ void	*single_philo_routine(void *arg)
 		return (NULL);
 	if (!increase_int(&philo->table->lock, &philo->table->running_threads))
 		return (NULL);
-	write_action(TAKE_FIRST_FORK, philo);
+	if (!write_action(TAKE_FIRST_FORK, philo))
+		return NULL;
 	is_finished = 0;
 	while(!is_finished)
 	{
