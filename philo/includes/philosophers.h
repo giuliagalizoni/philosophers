@@ -85,14 +85,15 @@ int	safe_thread_handle(pthread_t *thread, void *(*function)(void *), void *data,
 
 void	write_action(t_philo_action action, t_philo *philo);
 
-void	set_int(pthread_mutex_t *mutex, int *dest, int value);
-int	get_int(pthread_mutex_t *mutex, int *value);
-void	increase_int(pthread_mutex_t *mutex, int *value);
-void	set_long(pthread_mutex_t *mutex, long *dest, long value);
-long	get_long(pthread_mutex_t *mutex, long *value);
+// safety helpers
+int	set_int(pthread_mutex_t *mutex, int *dest, int value);
+int	get_int(pthread_mutex_t *mutex, int *value, int *dest);
+int	increase_int(pthread_mutex_t *mutex, int *value);
+int	set_long(pthread_mutex_t *mutex, long *dest, long value);
+int	get_long(pthread_mutex_t *mutex, long *value, long *dest);
 
 
-int	finish_simulation(t_table *table);
+int	finish_simulation(t_table *table, int *is_finished);
 long	get_time(t_time_code timecode);
 void	ft_usleep(long usec, t_table *table);
 

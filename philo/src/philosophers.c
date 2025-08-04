@@ -10,15 +10,25 @@
 
 // wait all philos, sync start
 // infinite loop
-void	wait_all_threads(t_table *table)
+int	wait_all_threads(t_table *table)
 {
-	while(!get_int(&table->lock, &table->all_ready))
-		; // just wait
+	int	all_threads_ready;
+
+	all_threads_ready = 0;
+	while(!all_threads_ready)
+	{
+		if (!get_int(&table->lock, &table->all_ready, &all_threads_ready))
+			return 0;
+		usleep(100);
+	}
+	return (1);
 }
 
-int	finish_simulation(t_table *table)
+int	finish_simulation(t_table *table, int *is_finished)
 {
-	return (get_int(&table->lock, &table->end_simulation));
+	if (!get_int(&table->lock, &table->end_simulation, is_finished))
+		return (0);
+	return (1);
 }
 
 void	think(t_philo *philo)
@@ -34,21 +44,29 @@ void	think(t_philo *philo)
 	ft_usleep(time_to_think * 0.5, philo->table);
 }
 
-static void eat(t_philo *philo)
+static int eat(t_philo *philo)
 {
-	safe_mutex_handle(&philo->first_fork->lock, LOCK);
+	if (!safe_mutex_handle(&philo->first_fork->lock, LOCK))
+		return (0);
 	write_action(TAKE_FIRST_FORK, philo);
-	safe_mutex_handle(&philo->second_fork->lock, LOCK);
+	if (!safe_mutex_handle(&philo->second_fork->lock, LOCK))
+		return (0);
 	write_action(TAKE_SECOND_FORK, philo);
-
-	set_long(&philo->lock, &philo->last_meal_time, get_time(MILISECOND));
+	if (!set_long(&philo->lock, &philo->last_meal_time, get_time(MILISECOND)))
+		return (0);
 	philo->meals_counter++; // maybe thread safe?
 	write_action(EATING, philo);
 	ft_usleep(philo->table->time_to_eat, philo->table);
 	if (philo->table->nbr_limit_meals > 0 && philo->meals_counter == philo->table->nbr_limit_meals)
-		set_int(&philo->lock, &philo->is_full, 1);
-	safe_mutex_handle(&philo->first_fork->lock, UNLOCK);
-	safe_mutex_handle(&philo->second_fork->lock, UNLOCK);
+	{
+		if (!set_int(&philo->lock, &philo->is_full, 1))
+			return (0);
+	}
+	if (!safe_mutex_handle(&philo->first_fork->lock, UNLOCK))
+		return (0);
+	if (!safe_mutex_handle(&philo->second_fork->lock, UNLOCK))
+		return (0);
+	return (1);
 }
 
 void	force_think(t_philo *philo)
@@ -68,23 +86,34 @@ void	force_think(t_philo *philo)
 void	*routine(void *data)
 {
 	t_philo *philo;
+	int	is_full;
+	int	is_finished;
 
 	philo = (t_philo *)data;
-	wait_all_threads(philo->table);
+	if (!wait_all_threads(philo->table))
+		return (NULL);
 
 	// increase running threads
-	increase_int(&philo->table->lock, &philo->table->running_threads);
+	if (increase_int(&philo->table->lock, &philo->table->running_threads))
+		return (NULL);
 
 	//set last meal time
-	set_long(&philo->lock, &philo->last_meal_time, get_time(MILISECOND));
+	if (set_long(&philo->lock, &philo->last_meal_time, get_time(MILISECOND)))
+		return (NULL);
 
 	// to make the game fair
+	force_think(philo);
 
-	while(!finish_simulation(philo->table))
+	is_finished = 0;
+	while(!is_finished)
 	{
+		if (!finish_simulation(philo->table, &is_finished))
+			return (NULL);
 		// 1 philo is full?
-		if (get_int(&philo->lock, &philo->is_full))
-    		break;
+		if (!get_int(&philo->lock, &philo->is_full, &is_full))
+			return (NULL);
+		if (is_full)
+			break;
 		// 2 eat
 		eat(philo);
 		// 3 sleep -> write status & ft_usleep
@@ -107,17 +136,14 @@ int	set_int(pthread_mutex_t *mutex, int *dest, int value)
 	return (1);
 }
 
-int	get_int(pthread_mutex_t *mutex, int *value) // change to receive the value by pointer
+int	get_int(pthread_mutex_t *mutex, int *value, int *dest)
 {
-	int	result;
-	int	status;
-
 	if (!safe_mutex_handle(mutex, LOCK))
 		return (0);
-	result = *value;
+	*dest = *value;
 	if (!safe_mutex_handle(mutex, UNLOCK))
 		return (0);
-	return (result); //problem
+	return (1); //problem
 }
 
 int	increase_int(pthread_mutex_t *lock, int *value)
@@ -140,16 +166,14 @@ int	set_long(pthread_mutex_t *mutex, long *dest, long value)
 	return (1);
 }
 
-long	get_long(pthread_mutex_t *mutex, long *value) // change to receive the value by pointer
+int	get_long(pthread_mutex_t *mutex, long *value, long *dest)
 {
-	long	result;
-
 	if (!safe_mutex_handle(mutex, LOCK))
 		return (0);
-	result = *value;
+	*dest = *value;
 	if (!safe_mutex_handle(mutex, UNLOCK))
 		return (0);
-	return (result); //problem
+	return (1);
 }
 
 //choronometer
@@ -170,18 +194,25 @@ long	get_time(t_time_code timecode)
 		return (0); //keep track of the error
 }
 
-void	*single_philo_routine(void *arg) // how can I track the errors in thouse functions
+void	*single_philo_routine(void *arg)
 {
 	t_philo *philo;
+	int	is_finished;
 
 	philo = (t_philo *)arg;
 	wait_all_threads(philo->table); // return value??
-	set_long(&philo->lock, &philo->last_meal_time, get_time(MILISECOND));
+	if (!set_long(&philo->lock, &philo->last_meal_time, get_time(MILISECOND)))
+		return (NULL);
 	if (!increase_int(&philo->table->lock, &philo->table->running_threads))
-		return ((void *)1); // can I do this?
+		return (NULL);
 	write_action(TAKE_FIRST_FORK, philo);
-	while(!finish_simulation(philo->table))
+	is_finished = 0;
+	while(!is_finished)
+	{
+		if (!finish_simulation(philo->table, &is_finished))
+			return (NULL);
 		usleep(200);
+	}
 	return (NULL);
 }
 
