@@ -95,7 +95,7 @@ int	get_long(pthread_mutex_t *mutex, long *value, long *dest);
 
 int	finish_simulation(t_table *table, int *is_finished);
 long	get_time(t_time_code timecode);
-void	ft_usleep(long usec, t_table *table);
+int	ft_usleep(long usec, t_table *table);
 
 void	*monitor(void *data);
 

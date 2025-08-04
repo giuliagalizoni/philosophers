@@ -78,26 +78,31 @@ static int	handle_thread_error(int status, t_opcode opcode)
 		return 1;
 	if (EAGAIN == status)
 	{
+		printf("EAGAIN");
 		// "No resources to create another thread."
 		return (0);
 	}
 	else if (EPERM == status)
 	{
+		printf("EPERM");
 		// "The caller does not have appropriate permission."
 		return (0);
 	}
 	else if (EINVAL == status)
 	{
+		printf("EINVAL");
 		// "The value specified by attr is invalid."
 		return (0);
 	}
 	else if (ESRCH == status)
 	{
+		printf("ESRCH");
 		// "No thread could be found corresponding to that specified by the given thread ID, thread."
 		return (0);
 	}
 	else if (EDEADLK == status)
 	{
+		printf("EDEADLK");
 		// "A deadlock was detected or the value of thread specifies the calling thread."
 		return (0);
 	}
@@ -138,32 +143,36 @@ int	safe_thread_handle(pthread_t *thread, void *(*function)(void *), void *data,
 		return (handle_thread_error(pthread_detach(*thread), opcode));
 	else
 	{
+		printf("wrong opcode");
 		// "Wrong opcode -- show options"
 		return 0;
 	}
 }
 
-void	ft_usleep(long usec, t_table *table)
+int	ft_usleep(long usec, t_table *table)
 {
 	long	start;
 	long	elapsed;
 	long	remaining;
+	int	is_finished;
 
 	start = get_time(MICROSECOND);
+	is_finished = 0;
 	while ((get_time(MICROSECOND) - start) < usec)
 	{
-		if (finish_simulation(table))
+		if (!finish_simulation(table, &is_finished))
+			return (0);
+		if (is_finished)
 			break;
 		elapsed = get_time(MICROSECOND) - start;
 		remaining = usec - elapsed;
-		// to get a spinlock threshold
 		if (remaining > 1000)
 			usleep(remaining / 2);
 		else
 		{
-			// spinklock
 			while(get_time(MICROSECOND) - start < usec)
 				;
 		}
 	}
+	return (1);
 }

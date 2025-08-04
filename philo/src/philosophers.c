@@ -38,11 +38,12 @@ int	think(t_philo *philo)
 	if (!write_action(THINKING, philo))
 		return (0);
 	if (philo->table->philo_number % 2 == 0)
-		return ;
+		return (1);
 	time_to_think = philo->table->time_to_eat * 2 - philo->table->time_to_sleep;
 	if (time_to_think < 0)
 		time_to_think = 0;
-	ft_usleep(time_to_think * 0.5, philo->table);
+	if (!ft_usleep(time_to_think * 0.5, philo->table))
+		return (0);
 	return (1);
 }
 
@@ -59,7 +60,8 @@ static int eat(t_philo *philo)
 	philo->meals_counter++; // maybe thread safe?
 	if (!write_action(EATING, philo))
 		return (0);
-	ft_usleep(philo->table->time_to_eat, philo->table);
+	if (!ft_usleep(philo->table->time_to_eat, philo->table))
+		return (0);
 	if (philo->table->nbr_limit_meals > 0 && philo->meals_counter == philo->table->nbr_limit_meals)
 	{
 		if (!set_int(&philo->lock, &philo->is_full, 1))
@@ -101,11 +103,11 @@ void	*routine(void *data)
 		return (NULL);
 
 	// increase running threads
-	if (increase_int(&philo->table->lock, &philo->table->running_threads))
+	if (!increase_int(&philo->table->lock, &philo->table->running_threads))
 		return (NULL);
 
 	//set last meal time
-	if (set_long(&philo->lock, &philo->last_meal_time, get_time(MILISECOND)))
+	if (!set_long(&philo->lock, &philo->last_meal_time, get_time(MILISECOND)))
 		return (NULL);
 
 	// to make the game fair
