@@ -1,8 +1,20 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   cleanup.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ggalizon <ggalizon@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/04 17:36:28 by ggalizon          #+#    #+#             */
+/*   Updated: 2025/08/04 17:36:41 by ggalizon         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../includes/philosophers.h"
 
 int	destroy_philos(t_table *table)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	while (i < table->philo_number)
@@ -17,15 +29,15 @@ int	destroy_philos(t_table *table)
 
 int	destroy_forks(t_table *table)
 {
-	int i;
+	int	i;
 
 	i = 0;
-		while (i < table->philo_number)
-		{
-			if (!safe_mutex_handle(&table->forks[i].lock, DESTROY))
-				return (0);
-			i++;
-		}
+	while (i < table->philo_number)
+	{
+		if (!safe_mutex_handle(&table->forks[i].lock, DESTROY))
+			return (0);
+		i++;
+	}
 	free(table->forks);
 	return (1);
 }
