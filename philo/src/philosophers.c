@@ -1,15 +1,5 @@
 #include "../includes/philosophers.h"
 
-// if no meals, return 0
-// if 1 philo special case
-// create all threads with philos
-// create a monitor thread
-// sync the beggining -> philo starts running
-// join
-
-
-// wait all philos, sync start
-// infinite loop
 int	wait_all_threads(t_table *table)
 {
 	int	all_threads_ready;
@@ -28,67 +18,6 @@ int	finish_simulation(t_table *table, int *is_finished)
 {
 	if (!get_int(&table->lock, &table->end_simulation, is_finished))
 		return (0);
-	return (1);
-}
-
-int	think(t_philo *philo)
-{
-	long	time_to_think;
-
-	if (!write_action(THINKING, philo))
-		return (0);
-	if (philo->table->philo_number % 2 == 0)
-		return (1);
-	time_to_think = philo->table->time_to_eat * 2 - philo->table->time_to_sleep;
-	if (time_to_think < 0)
-		time_to_think = 0;
-	if (!ft_usleep(time_to_think * 0.5, philo->table))
-		return (0);
-	return (1);
-}
-
-static int eat(t_philo *philo)
-{
-	if (!safe_mutex_handle(&philo->first_fork->lock, LOCK))
-		return (0);
-	write_action(TAKE_FIRST_FORK, philo);
-	if (!safe_mutex_handle(&philo->second_fork->lock, LOCK))
-		return (0);
-	write_action(TAKE_SECOND_FORK, philo);
-	if (!set_long(&philo->lock, &philo->last_meal_time, get_time(MILISECOND)))
-		return (0);
-	philo->meals_counter++; // maybe thread safe?
-	if (!write_action(EATING, philo))
-		return (0);
-	if (!ft_usleep(philo->table->time_to_eat, philo->table))
-		return (0);
-	if (philo->table->nbr_limit_meals > 0 && philo->meals_counter == philo->table->nbr_limit_meals)
-	{
-		if (!set_int(&philo->lock, &philo->is_full, 1))
-			return (0);
-	}
-	if (!safe_mutex_handle(&philo->first_fork->lock, UNLOCK))
-		return (0);
-	if (!safe_mutex_handle(&philo->second_fork->lock, UNLOCK))
-		return (0);
-	return (1);
-}
-
-int	force_think(t_philo *philo)
-{
-	if (philo->table->philo_number % 2 == 0)
-	{
-		if (philo->id % 2 == 0)
-			ft_usleep(30000, philo->table);
-	}
-	else
-	{
-		if (philo->id % 2 )
-		{
-			if (!think(philo))
-				return (0);
-		}
-	}
 	return (1);
 }
 
@@ -137,74 +66,6 @@ void	*routine(void *data)
 			return (NULL);
 	}
 	return (NULL);
-}
-
-int	set_int(pthread_mutex_t *mutex, int *dest, int value)
-{
-	if (!safe_mutex_handle(mutex, LOCK))
-		return (0);
-	*dest = value;
-	if (!safe_mutex_handle(mutex, UNLOCK))
-		return (0);
-	return (1);
-}
-
-int	get_int(pthread_mutex_t *mutex, int *value, int *dest)
-{
-	if (!safe_mutex_handle(mutex, LOCK))
-		return (0);
-	*dest = *value;
-	if (!safe_mutex_handle(mutex, UNLOCK))
-		return (0);
-	return (1); //problem
-}
-
-int	increase_int(pthread_mutex_t *lock, int *value)
-{
-	if (!safe_mutex_handle(lock, LOCK))
-		return (0);
-	(*value)++;
-	if (!safe_mutex_handle(lock, UNLOCK))
-		return (0);
-	return (1);
-}
-
-int	set_long(pthread_mutex_t *mutex, long *dest, long value)
-{
-	if (!safe_mutex_handle(mutex, LOCK))
-		return (0);
-	*dest = value;
-	if (!safe_mutex_handle(mutex, UNLOCK))
-		return (0);
-	return (1);
-}
-
-int	get_long(pthread_mutex_t *mutex, long *value, long *dest)
-{
-	if (!safe_mutex_handle(mutex, LOCK))
-		return (0);
-	*dest = *value;
-	if (!safe_mutex_handle(mutex, UNLOCK))
-		return (0);
-	return (1);
-}
-
-//choronometer
-// * time code: seconds miliseconds microsecond
-long	get_time(t_time_code timecode)
-{
-	struct timeval tv;
-
-	if (gettimeofday(&tv, NULL))
-		return (0); // keep the track of the error // will this work?
-	if (SECOND == timecode)
-		return (tv.tv_sec + (tv.tv_usec / 1000000));
-	else if (MILISECOND == timecode)
-		return ((tv.tv_sec * 1000) + (tv.tv_usec / 1000));
-	else if (MICROSECOND == timecode)
-		return ((tv.tv_sec * 1000000) + tv.tv_usec);
-	else
-		return (0); //keep track of the error
 }
 
 void	*single_philo_routine(void *arg)

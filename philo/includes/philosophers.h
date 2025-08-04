@@ -101,7 +101,10 @@ void	*monitor(void *data);
 
 int	cleanup(t_table *table);
 
+// action routines
+int	force_think(t_philo *philo);
 int	think(t_philo *philo);
+int eat(t_philo *philo);
 
 
 #endif
