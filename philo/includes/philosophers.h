@@ -6,6 +6,7 @@
 # include <unistd.h>
 # include <sys/time.h>
 # include <errno.h>
+# include <string.h>
 
 typedef enum e_action
 {
