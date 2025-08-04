@@ -1,23 +1,5 @@
 #include "../includes/philosophers.h"
 
-#define NUM_PHILO 4
-
-// void *routine(void *arg)
-// {
-// 	int id = *(int *)arg;
-// 	printf("Philosopher %d is thinking.\n", id);
-// 	sleep(1); // Simulate thinking
-// 	printf("Philosopher %d is hungry.\n", id);
-// 	sleep(1); // Simulate hunger
-// 	printf("Philosopher %d is eating.\n", id);
-// 	sleep(1); // Simulate eating
-// 	printf("Philosopher %d is done eating.\n", id);
-// 	return NULL;
-// }
-//TODO
-// - custom perror
-// - cleanup function
-
 static void assign_forks(t_philo *philo, t_fork *forks, int pos)
 {
 	philo->second_fork = &forks[pos];
@@ -29,7 +11,7 @@ static void assign_forks(t_philo *philo, t_fork *forks, int pos)
 	}
 }
 
-static void	philo_init(t_table *table)
+static int	philo_init(t_table *table)
 {
 	int	i;
 	t_philo *philo;
@@ -42,10 +24,12 @@ static void	philo_init(t_table *table)
 		philo->is_full = 0;
 		philo->meals_counter = 0;
 		philo->table = table;
-		safe_mutex_handle(&philo->lock, INIT);
+		if (!safe_mutex_handle(&philo->lock, INIT))
+			return (0);
 		assign_forks(philo, table->forks, i);
 		i++;
 	}
+	return (1);
 }
 
 int data_init(char **av, t_table *table)
@@ -64,8 +48,10 @@ int data_init(char **av, t_table *table)
 	table->all_ready = 0;
 	table->running_threads = 0;
 	table->philos = safe_malloc(sizeof(t_philo) * table->philo_number);
-	safe_mutex_handle(&table->lock, INIT);
-	safe_mutex_handle(&table->write_lock, INIT); // is this right?
+	if (!safe_mutex_handle(&table->lock, INIT))
+		return (0);
+	if (!safe_mutex_handle(&table->write_lock, INIT))
+		return (0); // is this right?
 	table->forks = safe_malloc(sizeof(t_fork) * table->philo_number);
 	i = 0;
 	while(i < table->philo_number)
@@ -75,11 +61,12 @@ int data_init(char **av, t_table *table)
 		table->forks[i].id = i;
 		i++;
 	}
-	philo_init(table);
+	if (!philo_init(table))
+		return (0);
 	return (1);
 }
 
-void	cleanup(t_table *table)
+int	cleanup(t_table *table)
 {
 	t_philo *philo;
 	int	i;
@@ -88,13 +75,17 @@ void	cleanup(t_table *table)
 	while (i < table->philo_number)
 	{
 		philo = table->philos + i;
-		safe_mutex_handle(&philo->lock, DESTROY); // deal with return value
+		if (!safe_mutex_handle(&philo->lock, DESTROY))
+			return (0);
 		i++;
 	}
-	safe_mutex_handle(&table->write_lock, DESTROY); // deal with return value
-	safe_mutex_handle(&table->lock, DESTROY); // deal with return value
+	if (!safe_mutex_handle(&table->write_lock, DESTROY))
+		return (0);
+	if (!safe_mutex_handle(&table->lock, DESTROY))
+		return (0);
 	free(table->forks);
 	free(table->philos);
+	return (1);
 }
 
 int	main(int ac, char **av)
@@ -107,46 +98,7 @@ int	main(int ac, char **av)
 		return (1);
 	if (!start(&table))
 		return (1);
-	cleanup(&table);
+	if (!cleanup(&table))
+		return (1);
 	return 0;
-
 }
-
-// int	main()
-// {
-// 	pthread_t philo[NUM_PHILO];
-// 	int ids[NUM_PHILO];
-// 	int i = 0;
-
-// 	// input check
-// 	// ac must be 5 or 6
-// 	// throw error and exit if not
-// 	// input parsing
-// 	// init data
-// 	// start simulation
-
-
-// 	while (i < NUM_PHILO)
-// 	{
-// 		ids[i] = i + 1;
-// 		if (pthread_create(&philo[i],  NULL, routine, &ids[i]))
-// 		{
-// 			perror("Failed to create thread");
-// 			return 1;
-// 		}
-// 		i++;
-// 	}
-// 	i = 0;
-// 	while (i < NUM_PHILO)
-// 	{
-// 		if (pthread_join(philo[i], NULL))
-// 		{
-// 			perror("failed to join thread");
-// 			return 1;
-// 		}
-// 		i++;
-// 	}
-
-// 	return 0;
-
-// }

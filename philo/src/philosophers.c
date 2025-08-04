@@ -111,7 +111,8 @@ void	*routine(void *data)
 		return (NULL);
 
 	// to make the game fair
-	force_think(philo);
+	if (!force_think(philo))
+		return (NULL);
 
 	is_finished = 0;
 	while(!is_finished)
@@ -129,10 +130,11 @@ void	*routine(void *data)
 		// 3 sleep -> write status & ft_usleep
 		if(!write_action(SLEEPING, philo))
 			return (NULL);
-		ft_usleep(philo->table->time_to_sleep, philo->table);
-
+		if (!ft_usleep(philo->table->time_to_sleep, philo->table))
+			return (NULL);
 		// 4 think
-		think(philo);
+		if (!think(philo))
+			return (NULL);
 	}
 	return (NULL);
 }
