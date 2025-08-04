@@ -6,7 +6,7 @@
 /*   By: ggalizon <ggalizon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 17:31:16 by ggalizon          #+#    #+#             */
-/*   Updated: 2025/08/04 17:32:24 by ggalizon         ###   ########.fr       */
+/*   Updated: 2025/08/04 17:35:01 by ggalizon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,8 @@ int	eat(t_philo *philo)
 		return (0);
 	if (!ft_usleep(philo->table->time_to_eat, philo->table))
 		return (0);
-	if (philo->table->nbr_limit_meals > 0 && philo->meals_counter == philo->table->nbr_limit_meals)
+	if (philo->table->nbr_limit_meals > 0
+		&& philo->meals_counter == philo->table->nbr_limit_meals)
 	{
 		if (!set_int(&philo->lock, &philo->is_full, 1))
 			return (0);
