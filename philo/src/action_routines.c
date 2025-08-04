@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   action_routines.c                                  :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ggalizon <ggalizon@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/04 17:31:16 by ggalizon          #+#    #+#             */
+/*   Updated: 2025/08/04 17:32:24 by ggalizon         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../includes/philosophers.h"
 
 int	think(t_philo *philo)
@@ -25,7 +37,7 @@ int	force_think(t_philo *philo)
 	}
 	else
 	{
-		if (philo->id % 2 )
+		if (philo->id % 2)
 		{
 			if (!think(philo))
 				return (0);
@@ -44,7 +56,7 @@ int	eat(t_philo *philo)
 	write_action(TAKE_SECOND_FORK, philo);
 	if (!set_long(&philo->lock, &philo->last_meal_time, get_time(MILISECOND)))
 		return (0);
-	philo->meals_counter++; // maybe thread safe?
+	philo->meals_counter++;
 	if (!write_action(EATING, philo))
 		return (0);
 	if (!ft_usleep(philo->table->time_to_eat, philo->table))
