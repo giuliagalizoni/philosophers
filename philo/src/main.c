@@ -51,13 +51,13 @@ int data_init(char **av, t_table *table)
 	if (!safe_mutex_handle(&table->lock, INIT))
 		return (0);
 	if (!safe_mutex_handle(&table->write_lock, INIT))
-		return (0); // is this right?
+		return (0);
 	table->forks = safe_malloc(sizeof(t_fork) * table->philo_number);
 	i = 0;
 	while(i < table->philo_number)
 	{
 		if (!safe_mutex_handle(&table->forks[i].lock, INIT))
-			return 0; // clean up
+			return 0;
 		table->forks[i].id = i;
 		i++;
 	}
@@ -71,34 +71,65 @@ int	cleanup(t_table *table)
 	t_philo *philo;
 	int	i;
 
-	i = 0;
-	while (i < table->philo_number)
+	if (table->philos)
 	{
-		philo = table->philos + i;
-		if (!safe_mutex_handle(&philo->lock, DESTROY))
-			return (0);
-		i++;
+		i = 0;
+		while (i < table->philo_number)
+		{
+			philo = table->philos + i;
+			if (!safe_mutex_handle(&philo->lock, DESTROY))
+				return (0);
+			i++;
+		}
+		free(table->philos);
+	}
+	if (table->forks)
+	{
+		i = 0;
+		while (i < table->philo_number)
+		{
+			if (!safe_mutex_handle(&table->forks[i].lock, DESTROY))
+				return (0);
+			i++;
+		}
+		free(table->forks);
 	}
 	if (!safe_mutex_handle(&table->write_lock, DESTROY))
 		return (0);
 	if (!safe_mutex_handle(&table->lock, DESTROY))
 		return (0);
-	free(table->forks);
-	free(table->philos);
 	return (1);
+}
+
+static void	init_table_struct(t_table *table)
+{
+    table->philo_number = 0;
+    table->time_to_die = 0;
+    table->time_to_eat = 0;
+    table->time_to_sleep = 0;
+    table->nbr_limit_meals = 0;
+    table->start_simulation = 0;
+    table->end_simulation = 0;
+    table->all_ready = 0;
+    table->running_threads = 0;
+    table->philos = NULL;
+    table->forks = NULL;
 }
 
 int	main(int ac, char **av)
 {
 	t_table table;
+	int	status;
 
+	init_table_struct(&table);
+	status = 0;
 	if (!check_input(ac, av))
-		return (1);
-	if (!data_init(av, &table))
-		return (1);
-	if (!start(&table))
-		return (1);
+		status = 1;
+	else if (!data_init(av, &table))
+		status = 1;
+	else if (!start(&table))
+		status = 1;
 	if (!cleanup(&table))
-		return (1);
-	return 0;
+		status = 1;
+	return status;
 }

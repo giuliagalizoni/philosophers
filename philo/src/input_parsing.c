@@ -80,7 +80,7 @@ int	check_input(int ac, char **av)
 {
 	if (ac < 5 || ac > 6)
 	{
-		printf("input needed\n"); // usage message
+		printf("Usage: ./philo <num_philos> <time_die> <time_eat> <time_sleep> [num_meals]\n");
 		return (0);
 	}
 	if (!valid_input(av[1], "philo number error")) // change error messages
