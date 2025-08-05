@@ -1,6 +1,6 @@
 #include "../includes/philosophers.h"
 
-int all_threads_running(t_table *table, int *are_running)
+int	all_threads_running(t_table *table, int *are_running)
 {
 	int	running_threads_count;
 
@@ -19,6 +19,7 @@ static int	dead_philo(t_philo *philo, int	*has_died)
 	long	last_meal_time;
 	int		is_full;
 
+	*has_died = 0;
 	if (!get_int(&philo->lock, &philo->is_full, &is_full))
 		return (0);
 	if (is_full)
@@ -31,13 +32,34 @@ static int	dead_philo(t_philo *philo, int	*has_died)
 	return (1);
 }
 
-void	*monitor(void *data)
+int	check_deaths(t_table *table)
 {
 	int	i;
-	t_table *table;
-	int	are_running;
 	int	has_died;
-	int	is_finished;
+
+	i = 0;
+	while (i < table->philo_number)
+	{
+		if (!dead_philo(table->philos + i, &has_died))
+			return (0);
+		if (has_died)
+		{
+			if (!write_action(DIED, table->philos + i))
+				return (0);
+			if (!set_int(&table->lock, &table->end_simulation, 1))
+				return (0);
+			return (1);
+		}
+		i++;
+	}
+	return (1);
+}
+
+void	*monitor(void *data)
+{
+	t_table	*table;
+	int		are_running;
+	int		is_finished;
 
 	table = (t_table *)data;
 	are_running = 0;
@@ -48,25 +70,13 @@ void	*monitor(void *data)
 		usleep(100);
 	}
 	is_finished = 0;
-	while(!is_finished)
+	while (!is_finished)
 	{
 		if (!simulation_is_finished(table, &is_finished))
 			return (NULL);
-		i = 0;
-		while(i < table->philo_number && !is_finished)
-		{
-			if (!dead_philo(table->philos + i, &has_died))
-				return (NULL);
-			if (has_died)
-			{
-				if (!write_action(DIED, table->philos + i))
-					return (NULL);
-				if (!set_int(&table->lock, &table->end_simulation, 1))
-					return (NULL);
-				break ;
-			}
-			i++;
-		}
+		if (!check_deaths(table))
+			return (NULL);
+		usleep(100);
 	}
-	return (NULL);
+	return (data);
 }
