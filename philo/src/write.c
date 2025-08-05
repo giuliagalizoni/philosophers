@@ -30,7 +30,8 @@ int	write_action(t_philo_action action, t_philo *philo)
 			&is_finished)
 		|| !get_int(&philo->lock, &philo->is_full, &is_full))
 	{
-		safe_mutex_handle(&philo->table->write_lock, UNLOCK);
+		if (!safe_mutex_handle(&philo->table->write_lock, UNLOCK))
+			return (0);
 		return (0);
 	}
 	if (is_finished || is_full)
