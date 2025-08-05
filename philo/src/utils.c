@@ -2,7 +2,7 @@
 
 void	*safe_malloc(size_t size, char *context)
 {
-	void*	memory;
+	void	*memory;
 
 	memory = malloc(size);
 	if (!memory)

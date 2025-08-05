@@ -63,4 +63,5 @@ int	safe_thread_handle(pthread_t *thread, void *(*function)(void *),
 		return (handle_thread_error(pthread_join(*thread, NULL)));
 	else if (DETACH == opcode)
 		return (handle_thread_error(pthread_detach(*thread)));
+	return (1);
 }
