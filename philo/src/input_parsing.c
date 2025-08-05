@@ -27,36 +27,37 @@ int	ft_atoi(const char *str)
 	return (number * flag);
 }
 
-int check_input_chars(char *inputs)
+int	check_input_chars(char *inputs)
 {
-	int i;
+	int	i;
 
 	i = 1;
-		while(inputs[i])
+	while (inputs[i])
+	{
+		if (inputs[i] == 32 || (inputs[i] >= 9 && inputs[i] <= 13))
 		{
-			if (inputs[i] == 32 || (inputs[i] >=9 && inputs[i] <= 13))
-			{
-				i++;
-				continue;
-			}
-			if (inputs[i] < '0' || inputs[i] > '9')
-				return (0);
+			i++;
+			continue ;
+		}
+		if (inputs[i] < '0' || inputs[i] > '9')
+			return (0);
 		i++;
 	}
 	return (1);
 }
 
-int valid_input(char *input, char *context)
+int	valid_input(char *input, char *context)
 {
-	int n;
-
+	int	n;
 
 	if (!input)
 		return (0);
 	if (!check_input_chars(input))
 	{
 		ft_perror("invalid character", context);
-		printf("Usage: ./philo <num_philos> <time_die> <time_eat> <time_sleep> [num_meals]\n");
+		printf(
+			"Usage: ./philo <num_philos> <time_die> <time_eat>"
+			"<time_sleep> [num_meals]\n");
 		return (0);
 	}
 	n = ft_atoi(input);
@@ -67,12 +68,14 @@ int valid_input(char *input, char *context)
 	}
 	return (1);
 }
+
 int	check_input(int ac, char **av)
 {
 	if (ac < 5 || ac > 6)
 	{
 		ft_perror(
-			"Usage: ./philo <num_philos> <time_die> <time_eat> <time_sleep> [num_meals]",
+			"Usage: ./philo <num_philos> <time_die> <time_eat>"
+			"<time_sleep> [num_meals]",
 			"wrong number of arguemnts");
 		return (0);
 	}
@@ -88,5 +91,3 @@ int	check_input(int ac, char **av)
 		return (0);
 	return (1);
 }
-
-
