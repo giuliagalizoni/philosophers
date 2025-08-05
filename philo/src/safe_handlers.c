@@ -1,118 +1,66 @@
 #include "../includes/philosophers.h"
 
-
 static int	handle_mutex_error(int status, t_opcode opcode)
 {
-	(void)opcode; // check later
-	if (0 == status)
-		return 1;
 	if (EINVAL == status && (LOCK == opcode || UNLOCK == opcode))
-	{
-		// print error "The value specified by mutex is invalid."
-		return 0;
-	}
+		ft_perror("The value specified by mutex is invalid.", NULL);
 	else if (EINVAL == status && INIT == opcode)
-	{
-		// print error "The value specified by attr is invalid."
-		return 0;
-	}
+		ft_perror("The value specified by attr is invalid.", NULL);
 	else if (EDEADLK == status)
-	{
-		// print error "A deadlock would occur if the thread blocked waiting for mutex."
-		return 0;
-	}
+		ft_perror("A deadlock would occur if the thread "
+			"blocked waiting for mutex.", NULL);
 	else if (EPERM == status)
-	{
-		// print error "The current thread does not hold a lock on mutex."
-		return 0;
-	}
+		ft_perror("The current thread does not hold a lock on mutex.", NULL);
 	else if (ENOMEM == status)
-	{
-		// print error "The process cannot allocate enough memory to create another mutex."
-		return 0;
-	}
+		ft_perror("The process cannot allocate enough memory "
+			"to create another mutex.", NULL);
 	else if (EBUSY == status)
-	{
-		// print error "Mutex is locked."
-		return 0;
-	}
-	return (1);
+		ft_perror("Mutex is locked.", NULL);
+	else
+		return (1);
+	return (0);
 }
 
-static int	handle_thread_error(int status, t_opcode opcode)
+static int	handle_thread_error(int status)
 {
-	(void)opcode; // check this later
-	if (0 == status)
-		return 1;
 	if (EAGAIN == status)
-	{
-		printf("EAGAIN");
-		// "No resources to create another thread."
-		return (0);
-	}
+		ft_perror("No resources to create another thread.", NULL);
 	else if (EPERM == status)
-	{
-		printf("EPERM");
-		// "The caller does not have appropriate permission."
-		return (0);
-	}
+		ft_perror("The caller does not have appropriate permission.", NULL);
 	else if (EINVAL == status)
-	{
-		printf("EINVAL");
-		// "The value specified by attr is invalid."
-		return (0);
-	}
+		ft_perror("The value specified by attr is invalid.", NULL);
 	else if (ESRCH == status)
-	{
-		printf("ESRCH");
-		// "No thread could be found corresponding to that specified by the given thread ID, thread."
-		return (0);
-	}
+		ft_perror("No thread could be found corresponding to "
+			"that specified by the given thread ID, thread.", NULL);
 	else if (EDEADLK == status)
-	{
-		printf("EDEADLK");
-		// "A deadlock was detected or the value of thread specifies the calling thread."
-		return (0);
-	}
-	return (1);
+		ft_perror("A deadlock was detected or the value of thread "
+			"specifies the calling thread.", NULL);
+	else
+		return (1);
+	return (0);
 }
-
-// MUTEX SAFE
-// init
-// destroy
-// lock
-// unlock
 
 int	safe_mutex_handle(pthread_mutex_t *mutex, t_opcode opcode)
 {
 	if (LOCK == opcode)
-		return handle_mutex_error(pthread_mutex_lock(mutex), opcode);
+		return (handle_mutex_error(pthread_mutex_lock(mutex), opcode));
 	else if (UNLOCK == opcode)
-		return handle_mutex_error(pthread_mutex_unlock(mutex), opcode);
+		return (handle_mutex_error(pthread_mutex_unlock(mutex), opcode));
 	else if (INIT == opcode)
-		return handle_mutex_error(pthread_mutex_init(mutex, NULL), opcode);
+		return (handle_mutex_error(pthread_mutex_init(mutex, NULL), opcode));
 	else if (DESTROY == opcode)
-		return handle_mutex_error(pthread_mutex_destroy(mutex), opcode);
-	else
-	{
-		printf("wrong opcode"); // perror f
-		return (0);
-	}
+		return (handle_mutex_error(pthread_mutex_destroy(mutex), opcode));
 	return (1);
 }
 
-int	safe_thread_handle(pthread_t *thread, void *(*function)(void *), void *data, t_opcode opcode)
+int	safe_thread_handle(pthread_t *thread, void *(*function)(void *),
+	void *data, t_opcode opcode)
 {
 	if (CREATE == opcode)
-		return (handle_thread_error(pthread_create(thread, NULL, function, data), opcode));
+		return (handle_thread_error(pthread_create(thread, NULL,
+					function, data)));
 	else if (JOIN == opcode)
-		return (handle_thread_error(pthread_join(*thread, NULL), opcode));
+		return (handle_thread_error(pthread_join(*thread, NULL)));
 	else if (DETACH == opcode)
-		return (handle_thread_error(pthread_detach(*thread), opcode));
-	else
-	{
-		printf("wrong opcode");
-		// "Wrong opcode -- show options"
-		return 0;
-	}
+		return (handle_thread_error(pthread_detach(*thread)));
 }
