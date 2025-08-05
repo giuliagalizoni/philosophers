@@ -6,7 +6,7 @@
 /*   By: vscode <vscode@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 17:45:33 by ggalizon          #+#    #+#             */
-/*   Updated: 2025/08/05 07:54:10 by vscode           ###   ########.fr       */
+/*   Updated: 2025/08/05 12:20:53 by vscode           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,7 +92,7 @@ int		ft_atoi(const char *str);
 int		data_init(char **av, t_table *table);
 int		check_input(int ac, char **av);
 int		start(t_table *table);
-void	*safe_malloc(size_t size);
+void	*safe_malloc(size_t size, char *context);
 int		safe_mutex_handle(pthread_mutex_t *mutex, t_opcode opcode);
 int		safe_thread_handle(pthread_t *thread, void *(*function)(void *),
 			void *data, t_opcode opcode);

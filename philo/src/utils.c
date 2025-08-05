@@ -1,13 +1,13 @@
 #include "../includes/philosophers.h"
 
-void	*safe_malloc(size_t size)
+void	*safe_malloc(size_t size, char *context)
 {
 	void* memory;
 
 	memory = malloc(size);
 	if (!memory)
 	{
-		printf("malloc error\n"); // review error messages;
+		ft_perror("malloc failed", context);
 		return NULL;
 	}
 	return memory;

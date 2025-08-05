@@ -47,12 +47,12 @@ int data_init(char **av, t_table *table)
 	table->end_simulation = 0;
 	table->all_ready = 0;
 	table->running_threads = 0;
-	table->philos = safe_malloc(sizeof(t_philo) * table->philo_number);
+	table->philos = safe_malloc(sizeof(t_philo) * table->philo_number, "Philos");
 	if (!safe_mutex_handle(&table->lock, INIT))
 		return (0);
 	if (!safe_mutex_handle(&table->write_lock, INIT))
 		return (0);
-	table->forks = safe_malloc(sizeof(t_fork) * table->philo_number);
+	table->forks = safe_malloc(sizeof(t_fork) * table->philo_number, "Forks");
 	i = 0;
 	while(i < table->philo_number)
 	{
