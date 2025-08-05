@@ -1,5 +1,16 @@
 #include "../includes/philosophers.h"
 
+static void	assign_forks(t_philo *philo, t_fork *forks, int pos)
+{
+	philo->second_fork = &forks[pos];
+	philo->first_fork = &forks[((pos + 1) % philo->table->philo_number)];
+	if (philo->id % 2 == 0)
+	{
+		philo->first_fork = &forks[pos];
+		philo->second_fork = &forks[(pos + 1) % philo->table->philo_number];
+	}
+}
+
 static int	init_philos(t_table *table)
 {
 	t_philo	*philo;
@@ -35,17 +46,6 @@ static int	init_forks(t_table *table)
 		i++;
 	}
 	return (1);
-}
-
-static void	assign_forks(t_philo *philo, t_fork *forks, int pos)
-{
-	philo->second_fork = &forks[pos];
-	philo->first_fork = &forks[((pos + 1) % philo->table->philo_number)];
-	if (philo->id % 2 == 0)
-	{
-		philo->first_fork = &forks[pos];
-		philo->second_fork = &forks[(pos + 1) % philo->table->philo_number];
-	}
 }
 
 int	data_init(char **av, t_table *table)
