@@ -1,9 +1,5 @@
 #include "../includes/philosophers.h"
 
-// convert args to long (why not int? I think I'll try int)
-// check for invalid input and throw error
-
-
 int	ft_atoi(const char *str)
 {
 	int	i;
@@ -31,10 +27,6 @@ int	ft_atoi(const char *str)
 	return (number * flag);
 }
 
-// shouldn't be negative
-// shouldn't be 0
-// shouldn't be invalid -- maybe this is the only one that should be thrown inside atoi
-
 int check_input_chars(char *inputs)
 {
 	int i;
@@ -47,31 +39,30 @@ int check_input_chars(char *inputs)
 				i++;
 				continue;
 			}
-			if (inputs[i] < '0' || inputs[i] > '9') //gotta check if alpha after number is ok
-			{
-				printf("invalid character\n"); // review error printing
+			if (inputs[i] < '0' || inputs[i] > '9')
 				return (0);
-			}
 		i++;
 	}
 	return (1);
 }
 
-int valid_input(char *input, char *err)
+int valid_input(char *input, char *context)
 {
 	int n;
+
 
 	if (!input)
 		return (0);
 	if (!check_input_chars(input))
 	{
-		printf("%s\n", err); // change this after
+		ft_perror("invalid character", context);
+		printf("Usage: ./philo <num_philos> <time_die> <time_eat> <time_sleep> [num_meals]\n");
 		return (0);
 	}
 	n = ft_atoi(input);
 	if (n <= 0)
 	{
-		printf("%s\n", err); // change this after
+		ft_perror("value shoud be greater than 0", context);
 		return (0);
 	}
 	return (1);
@@ -80,18 +71,20 @@ int	check_input(int ac, char **av)
 {
 	if (ac < 5 || ac > 6)
 	{
-		printf("Usage: ./philo <num_philos> <time_die> <time_eat> <time_sleep> [num_meals]\n");
+		ft_perror(
+			"Usage: ./philo <num_philos> <time_die> <time_eat> <time_sleep> [num_meals]",
+			"wrong number of arguemnts");
 		return (0);
 	}
-	if (!valid_input(av[1], "philo number error")) // change error messages
+	if (!valid_input(av[1], "philo_number"))
 		return (0);
-	if (!valid_input(av[2], "time to die error"))
+	if (!valid_input(av[2], "time_to_die"))
 		return (0);
-	if (!valid_input(av[3], "time to eat error"))
+	if (!valid_input(av[3], "time_to_eat"))
 		return (0);
-	if (!valid_input(av[4], "time to sleep error"))
+	if (!valid_input(av[4], "time_to_sleep"))
 		return (0);
-	if (av[5] && !valid_input(av[5], "limit of meals error"))
+	if (av[5] && !valid_input(av[5], "limit_of_meals"))
 		return (0);
 	return (1);
 }

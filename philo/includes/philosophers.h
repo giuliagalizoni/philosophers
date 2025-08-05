@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philosophers.h                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ggalizon <ggalizon@student.42.fr>          +#+  +:+       +#+        */
+/*   By: vscode <vscode@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 17:45:33 by ggalizon          #+#    #+#             */
-/*   Updated: 2025/08/04 17:49:51 by ggalizon         ###   ########.fr       */
+/*   Updated: 2025/08/05 07:54:10 by vscode           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,6 +113,7 @@ int		ft_usleep(long usec, t_table *table);
 void	*monitor(void *data);
 
 int		cleanup(t_table *table);
+void	ft_perror(char *error, char *context);
 
 // action routines
 int		force_think(t_philo *philo);

@@ -58,3 +58,29 @@ int	ft_usleep(long usec, t_table *table)
 	}
 	return (1);
 }
+
+static void	ft_putstr_fd(char *s, int fd)
+{
+	if (!s)
+		return ;
+	while (*s)
+	{
+		write(fd, s, 1);
+		s++;
+	}
+}
+
+void	ft_perror(char *error, char *context)
+{
+	write(2, "Error: ", 7);
+	if (context)
+	{
+		ft_putstr_fd(context, 2);
+		write(2, ": ", 2);
+	}
+	if (error)
+		ft_putstr_fd(error, 2);
+	else
+		ft_putstr_fd("something went wrong", 2);
+	write(2, "\n", 1);
+}
