@@ -35,8 +35,8 @@ int	start(t_table *table)
 		return (1);
 	if (table->philo_number == 1)
 	{
-		if (!safe_thread_handle(&table->philos[0].thread_id, single_philo_routine,
-				&table->philos[0], CREATE))
+		if (!safe_thread_handle(&table->philos[0].thread_id,
+				single_philo_routine, &table->philos[0], CREATE))
 			return (0);
 	}
 	else
@@ -46,13 +46,13 @@ int	start(t_table *table)
 	}
 	table->start_simulation = get_time(MILISECOND);
 	if (!table->start_simulation
-			|| !safe_thread_handle(&table->monitor, monitor, table, CREATE)
-			|| !set_int(&table->lock, &table->all_ready, 1))
+		|| !safe_thread_handle(&table->monitor, monitor, table, CREATE)
+		|| !set_int(&table->lock, &table->all_ready, 1))
 		return (0);
 	if (!join_philos(table))
 		return (0);
 	if (!set_int(&table->lock, &table->end_simulation, 1)
-			|| !safe_thread_handle(&table->monitor, NULL, NULL, JOIN))
+		|| !safe_thread_handle(&table->monitor, NULL, NULL, JOIN))
 		return (0);
-	return 1;
+	return (1);
 }

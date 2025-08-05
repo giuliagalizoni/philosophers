@@ -2,25 +2,23 @@
 
 void	*safe_malloc(size_t size, char *context)
 {
-	void* memory;
+	void*	memory;
 
 	memory = malloc(size);
 	if (!memory)
 	{
 		ft_perror("malloc failed", context);
-		return NULL;
+		return (NULL);
 	}
-	return memory;
+	return (memory);
 }
 
-//choronometer
-// * time code: seconds miliseconds microsecond
 long	get_time(t_time_code timecode)
 {
-	struct timeval tv;
+	struct timeval	tv;
 
 	if (gettimeofday(&tv, NULL))
-		return (0); // keep the track of the error // will this work?
+		return (0);
 	if (SECOND == timecode)
 		return (tv.tv_sec + (tv.tv_usec / 1000000));
 	else if (MILISECOND == timecode)
@@ -45,14 +43,14 @@ int	ft_usleep(long usec, t_table *table)
 		if (!simulation_is_finished(table, &is_finished))
 			return (0);
 		if (is_finished)
-			break;
+			break ;
 		elapsed = get_time(MICROSECOND) - start;
 		remaining = usec - elapsed;
 		if (remaining > 1000)
 			usleep(remaining / 2);
 		else
 		{
-			while(get_time(MICROSECOND) - start < usec)
+			while (get_time(MICROSECOND) - start < usec)
 				;
 		}
 	}
