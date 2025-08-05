@@ -6,7 +6,7 @@
 /*   By: vscode <vscode@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 17:45:33 by ggalizon          #+#    #+#             */
-/*   Updated: 2025/08/05 12:20:53 by vscode           ###   ########.fr       */
+/*   Updated: 2025/08/05 13:11:37 by vscode           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,7 +106,7 @@ int		increase_int(pthread_mutex_t *mutex, int *value);
 int		set_long(pthread_mutex_t *mutex, long *dest, long value);
 int		get_long(pthread_mutex_t *mutex, long *value, long *dest);
 
-int		finish_simulation(t_table *table, int *is_finished);
+int		simulation_is_finished(t_table *table, int *is_finished);
 long	get_time(t_time_code timecode);
 int		ft_usleep(long usec, t_table *table);
 
@@ -116,6 +116,8 @@ int		cleanup(t_table *table);
 void	ft_perror(char *error, char *context);
 
 // action routines
+void	*routine(void *data);
+void	*single_philo_routine(void *arg);
 int		force_think(t_philo *philo);
 int		think(t_philo *philo);
 int		eat(t_philo *philo);

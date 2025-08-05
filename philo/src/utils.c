@@ -36,13 +36,13 @@ int	ft_usleep(long usec, t_table *table)
 	long	start;
 	long	elapsed;
 	long	remaining;
-	int	is_finished;
+	int		is_finished;
 
 	start = get_time(MICROSECOND);
 	is_finished = 0;
 	while ((get_time(MICROSECOND) - start) < usec)
 	{
-		if (!finish_simulation(table, &is_finished))
+		if (!simulation_is_finished(table, &is_finished))
 			return (0);
 		if (is_finished)
 			break;

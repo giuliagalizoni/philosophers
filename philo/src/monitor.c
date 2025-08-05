@@ -50,7 +50,7 @@ void	*monitor(void *data)
 	is_finished = 0;
 	while(!is_finished)
 	{
-		if (!finish_simulation(table, &is_finished))
+		if (!simulation_is_finished(table, &is_finished))
 			return (NULL);
 		i = 0;
 		while(i < table->philo_number && !is_finished)
