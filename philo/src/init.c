@@ -1,20 +1,9 @@
 #include "../includes/philosophers.h"
 
-static void assign_forks(t_philo *philo, t_fork *forks, int pos)
+static int	init_philos(t_table *table)
 {
-	philo->second_fork = &forks[pos];
-	philo->first_fork = &forks[((pos + 1) % philo->table->philo_number)];
-	if (philo->id % 2 == 0)
-	{
-		philo->first_fork = &forks[pos];
-		philo->second_fork = &forks[(pos + 1) % philo->table->philo_number];
-	}
-}
-
-static int	philo_init(t_table *table)
-{
-	int	i;
-	t_philo *philo;
+	t_philo	*philo;
+	int		i;
 
 	i = 0;
 	while (i < table->philo_number)
@@ -32,14 +21,39 @@ static int	philo_init(t_table *table)
 	return (1);
 }
 
-int data_init(char **av, t_table *table)
+static int	init_forks(t_table *table)
 {
-	int i;
+	int	i;
 
+	i = 0;
+	table->forks = safe_malloc(sizeof(t_fork) * table->philo_number, "Forks");
+	while (i < table->philo_number)
+	{
+		if (!safe_mutex_handle(&table->forks[i].lock, INIT))
+			return (0);
+		table->forks[i].id = i;
+		i++;
+	}
+	return (1);
+}
+
+static void	assign_forks(t_philo *philo, t_fork *forks, int pos)
+{
+	philo->second_fork = &forks[pos];
+	philo->first_fork = &forks[((pos + 1) % philo->table->philo_number)];
+	if (philo->id % 2 == 0)
+	{
+		philo->first_fork = &forks[pos];
+		philo->second_fork = &forks[(pos + 1) % philo->table->philo_number];
+	}
+}
+
+int	data_init(char **av, t_table *table)
+{
 	table->philo_number = ft_atoi(av[1]);
-	table->time_to_die = (long) (ft_atoi(av[2]) * 1000);
-	table->time_to_eat = (long) (ft_atoi(av[3]) * 1000);
-	table->time_to_sleep = (long) (ft_atoi(av[4]) * 1000);
+	table->time_to_die = (long)(ft_atoi(av[2]) * 1000);
+	table->time_to_eat = (long)(ft_atoi(av[3]) * 1000);
+	table->time_to_sleep = (long)(ft_atoi(av[4]) * 1000);
 	if (av[5])
 		table->nbr_limit_meals = ft_atoi(av[5]);
 	else
@@ -47,21 +61,15 @@ int data_init(char **av, t_table *table)
 	table->end_simulation = 0;
 	table->all_ready = 0;
 	table->running_threads = 0;
-	table->philos = safe_malloc(sizeof(t_philo) * table->philo_number, "Philos");
+	table->philos = safe_malloc(sizeof(t_philo) * table->philo_number,
+				"Philos");
 	if (!safe_mutex_handle(&table->lock, INIT))
 		return (0);
 	if (!safe_mutex_handle(&table->write_lock, INIT))
 		return (0);
-	table->forks = safe_malloc(sizeof(t_fork) * table->philo_number, "Forks");
-	i = 0;
-	while(i < table->philo_number)
-	{
-		if (!safe_mutex_handle(&table->forks[i].lock, INIT))
-			return 0;
-		table->forks[i].id = i;
-		i++;
-	}
-	if (!philo_init(table))
+	if (!init_forks(table))
+		return (0);
+	if (!init_philos(table))
 		return (0);
 	return (1);
 }
