@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   init.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ggalizon <ggalizon@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/06 10:06:54 by ggalizon          #+#    #+#             */
+/*   Updated: 2025/08/06 10:07:02 by ggalizon         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../includes/philosophers.h"
 
 static void	assign_forks(t_philo *philo, t_fork *forks, int pos)
@@ -62,7 +74,7 @@ int	data_init(char **av, t_table *table)
 	table->all_ready = 0;
 	table->running_threads = 0;
 	table->philos = safe_malloc(sizeof(t_philo) * table->philo_number,
-				"Philos");
+			"Philos");
 	if (!safe_mutex_handle(&table->lock, INIT))
 		return (0);
 	if (!safe_mutex_handle(&table->write_lock, INIT))
