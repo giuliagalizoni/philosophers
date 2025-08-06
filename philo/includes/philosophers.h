@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philosophers.h                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vscode <vscode@student.42.fr>              +#+  +:+       +#+        */
+/*   By: ggalizon <ggalizon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 17:45:33 by ggalizon          #+#    #+#             */
-/*   Updated: 2025/08/05 13:11:37 by vscode           ###   ########.fr       */
+/*   Updated: 2025/08/06 10:16:07 by ggalizon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,14 +49,13 @@ typedef enum e_time_code
 }	t_time_code;
 
 typedef struct s_table	t_table;
-//Fork
+
 typedef struct s_fork
 {
 	pthread_mutex_t	lock;
 	int				id;
 }	t_fork;
 
-//Philo
 typedef struct s_philo
 {
 	int				id;
@@ -96,26 +95,18 @@ void	*safe_malloc(size_t size, char *context);
 int		safe_mutex_handle(pthread_mutex_t *mutex, t_opcode opcode);
 int		safe_thread_handle(pthread_t *thread, void *(*function)(void *),
 			void *data, t_opcode opcode);
-
 int		write_action(t_philo_action action, t_philo *philo);
-
-// safety helpers
 int		set_int(pthread_mutex_t *mutex, int *dest, int value);
 int		get_int(pthread_mutex_t *mutex, int *value, int *dest);
 int		increase_int(pthread_mutex_t *mutex, int *value);
 int		set_long(pthread_mutex_t *mutex, long *dest, long value);
 int		get_long(pthread_mutex_t *mutex, long *value, long *dest);
-
 int		simulation_is_finished(t_table *table, int *is_finished);
 long	get_time(t_time_code timecode);
 int		ft_usleep(long usec, t_table *table);
-
 void	*monitor(void *data);
-
 int		cleanup(t_table *table);
 void	ft_perror(char *error, char *context);
-
-// action routines
 void	*routine(void *data);
 void	*single_philo_routine(void *arg);
 int		force_think(t_philo *philo);
