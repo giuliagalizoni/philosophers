@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philosophers.h                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ggalizon <ggalizon@student.42.fr>          +#+  +:+       +#+        */
+/*   By: vscode <vscode@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 17:45:33 by ggalizon          #+#    #+#             */
-/*   Updated: 2025/08/06 17:49:21 by ggalizon         ###   ########.fr       */
+/*   Updated: 2025/08/07 08:19:01 by vscode           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,7 +87,7 @@ struct s_table
 	t_philo			*philos;
 };
 
-int		ft_atoi(const char *str, int *over_intmax);
+int		ft_atoi(const char *str);
 int		data_init(char **av, t_table *table);
 int		check_input(int ac, char **av);
 int		start(t_table *table);

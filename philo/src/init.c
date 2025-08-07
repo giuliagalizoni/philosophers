@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   init.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ggalizon <ggalizon@student.42.fr>          +#+  +:+       +#+        */
+/*   By: vscode <vscode@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/06 10:06:54 by ggalizon          #+#    #+#             */
-/*   Updated: 2025/08/06 10:07:02 by ggalizon         ###   ########.fr       */
+/*   Updated: 2025/08/07 08:18:53 by vscode           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,4 +84,31 @@ int	data_init(char **av, t_table *table)
 	if (!init_philos(table))
 		return (0);
 	return (1);
+}
+
+int	ft_atoi(const char *str)
+{
+	int		i;
+	long	number;
+	int		flag;
+
+	i = 0;
+	number = 0;
+	flag = 1;
+	while (str[i] == 32 || (str[i] >= 9 && str[i] <= 13))
+		(i)++;
+	if (str[i] == '-' || str[i] == '+')
+	{
+		if (str[i] == '-')
+			flag = (flag) * -1;
+		i++;
+	}
+	if (str[i] < '0' || str[i] > '9')
+		return (0);
+	while (str[i] >= '0' && str[i] <= '9')
+	{
+		number = number * 10 + (str[i] - '0');
+		i++;
+	}
+	return ((int)number * flag);
 }
