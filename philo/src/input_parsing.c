@@ -6,7 +6,7 @@
 /*   By: vscode <vscode@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/06 10:06:38 by ggalizon          #+#    #+#             */
-/*   Updated: 2025/08/07 09:21:24 by vscode           ###   ########.fr       */
+/*   Updated: 2025/08/07 12:09:47 by vscode           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,8 @@ int	check_input_chars(char *str, int *is_negative)
 			*is_negative = 1;
 		i++;
 	}
+	if (str[i] == '\0')
+		return (0);
 	while (str[i])
 	{
 		if (str[i] < '0' || str[i] > '9')
