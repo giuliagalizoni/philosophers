@@ -6,7 +6,7 @@
 /*   By: vscode <vscode@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/06 10:06:38 by ggalizon          #+#    #+#             */
-/*   Updated: 2025/08/07 12:09:47 by vscode           ###   ########.fr       */
+/*   Updated: 2025/08/07 15:36:39 by vscode           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,7 +87,7 @@ int	valid_input(char *input, char *context)
 			"<time_sleep> [num_meals]\n");
 		return (0);
 	}
-	if (is_negative)
+	if (is_negative || ft_atoi(input) == 0)
 	{
 		ft_perror("value must be greater than 0", context);
 		return (0);
